@@ -28,11 +28,9 @@ button[style*="border: 1px solid #111111"]:hover{background:#111111 !important;c
 .pf-fade{animation:pfFade .8s ease 1s both}
 #cards a{position:absolute;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;text-decoration:none;box-shadow:0 16px 36px rgba(0,0,0,.14)}
 #cards a:hover{box-shadow:0 0 0 3px #111111,0 16px 36px rgba(0,0,0,.2)}
-#ribbon>div{position:absolute;overflow:hidden;backface-visibility:visible;will-change:transform,opacity}
-#ribbon .fc{position:absolute;top:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between}
-#ribbon .sh,#ribbon .gl{position:absolute;inset:0;pointer-events:none;opacity:0}
+#ribbon>div{position:absolute;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:visible}
+#ribbon .sh{position:absolute;inset:0;pointer-events:none;opacity:0}
 #ribbon .sh{background:#000}
-#ribbon .gl{background:#fff}
 section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 #cards.compact a .im,#cards.compact a .sb{display:none !important}
 #cards.compact a .tt{font-size:17px !important}
@@ -70,12 +68,12 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 <button id="toTop" type="button" aria-label="맨 위로 가기" style="position: fixed; right: 20px; bottom: 20px; z-index: 90; width: 52px; height: 52px; border-radius: 50%; border: 1px solid #111111; background: #FFFFFF; color: #111111; font-size: 20px; font-weight: 700; cursor: pointer; opacity: 0; pointer-events: none;">↑</button>
 <section id="top" style="position: relative; height: 440vh;">
   <div style="position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #C2C2C2;">
-    <div id="persp" style="position: absolute; inset: 0; perspective: 1100px; perspective-origin: 50% 45%;">
-      <div id="center" style="position: absolute; left: 50%; top: 52%; width: 0; height: 0; transform-style: preserve-3d;">
+    <div id="persp" style="position: absolute; inset: 0; ">
+      <div id="center" style="position: absolute; left: 50%; top: 52%; width: 0; height: 0; perspective: 1100px;">
+        <div id="ribbon" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d;"></div>
         <div id="line1" class="pf-in-l" style="position: absolute; top: -150px; white-space: nowrap; font-size: 112px; line-height: 1; font-weight: 500; letter-spacing: -0.06em; color: #2E2E2E; pointer-events: none;">UI/UX DESIGN</div>
         <p id="sub" style="position: absolute; left: -160px; top: -30px; width: 320px; margin: 0; text-align: center; font-size: 10px; line-height: 1.5; font-weight: 700; letter-spacing: 0.08em; color: #3A3A3A; pointer-events: none;"><span class="pf-fade" style="display: block;">I DESIGN HOW PEOPLE FLOW<br>BEFORE I DESIGN SCREENS<br>PARK YOUNGMIN · 2026</span></p>
         <div id="line2" class="pf-in-r" style="position: absolute; top: 10px; white-space: nowrap; font-size: 112px; line-height: 1; font-weight: 500; letter-spacing: -0.06em; color: #2E2E2E; pointer-events: none;">PORTFOLIO</div>
-        <div id="ribbon" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d;"></div>
         <div id="cards" style="position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d;"></div>
       </div>
     </div>
@@ -254,19 +252,14 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   var clamp=function(v){return Math.max(0,Math.min(1,v));}, smooth=function(v){return v*v*(3-2*v);}, lerp=function(a,b,k){return a+(b-a)*k;};
   var bez=function(a,b,c,k){return (1-k)*(1-k)*a+2*(1-k)*k*b+k*k*c;};
 
-  // 리본 — 카드 한 장을 세로 띠 S개로 잘라, 띠마다 따로 기울여서 천처럼 휘게 만듦
-  var N=22, S=8, RAD=720, CW=244, CH=172, PHI0=-125, PHI1=125, SW=CW/S;
-  var arcLen=RAD*(PHI1-PHI0)*Math.PI/180, du=CW/arcLen, strips=[];
+  // 리본 — 카드 22장을 원호를 따라 이어 붙인 띠
+  var N=22, RAD=720, CW=244, CH=172, PHI0=-125, PHI1=125;
+  var arcLen=RAD*(PHI1-PHI0)*Math.PI/180, du=CW/arcLen, panels=[];
   for(var i=0;i<N;i++){
-    var d=DATA[i%DATA.length];
-    var face='<div class="fc" style="width:'+CW+'px;height:'+CH+'px;padding:12px;background:'+d.bg+';color:'+d.fg+'"><span style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.08em"><span>'+label(d)+'</span><span>'+d.tag+'</span></span><span style="font-size:22px;font-weight:900;line-height:1.05;letter-spacing:-.03em">'+d.title+'</span><span style="height:44px;background:'+d.block+'"></span></div>';
-    for(var k=0;k<S;k++){
-      var el=document.createElement('div');
-      el.style.cssText='left:'+(-SW/2)+'px;top:'+(-CH/2)+'px;width:'+SW+'px;height:'+CH+'px;';
-      el.innerHTML=face.replace('class="fc" style="','class="fc" style="left:'+(-k*SW)+'px;')+'<i class="sh"></i><i class="gl"></i>';
-      el.sh=el.lastChild.previousSibling; el.gl=el.lastChild; el.pi=i; el.k=k;
-      ribbon.appendChild(el); strips.push(el);
-    }
+    var d=DATA[i%DATA.length], el=document.createElement('div');
+    el.style.cssText='left:'+(-CW/2)+'px;top:'+(-CH/2)+'px;width:'+CW+'px;height:'+CH+'px;padding:12px;background:'+d.bg+';color:'+d.fg+';';
+    el.innerHTML='<span style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.08em"><span>'+label(d)+'</span><span>'+d.tag+'</span></span><span style="font-size:22px;font-weight:900;line-height:1.05;letter-spacing:-.03em">'+d.title+'</span><span style="height:44px;background:'+d.block+'"></span><i class="sh"></i>';
+    el.sh=el.lastChild; ribbon.appendChild(el); panels.push(el);
   }
   // 격자 카드 (선택하면 상세로)
   var cards=DATA.map(function(d,i){
@@ -282,7 +275,6 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 
   var p=0, sp=0, zoom=null;            // p: 실제 스크롤 위치, sp: 부드럽게 따라가는 위치
   var reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
-  var T=0, inE=reduce?1:0, amp=1;      // T: 경과 시간(초), inE: 첫 등장 정도, amp: 바람 세기
   function render(){
     var vw=window.innerWidth, vh=window.innerHeight, mobile=vw<760;
     var s=Math.max(0.36,Math.min(1,vw/1320, vh/860));
@@ -294,34 +286,26 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
     else { line1.style.top='-150px'; line1.style.left='auto'; line1.style.right='0'; line1.style.width='auto'; line1.style.textAlign='right'; line2.style.left='0'; line2.style.width='auto'; line2.style.textAlign='left'; line2.style.top='24px'; sub.style.top='-36px'; sub.style.fontSize=Math.max(10,11/s).toFixed(1)+'px'; sub.style.width='320px'; sub.style.left='-160px'; }
     line1.style.transform='translateX('+shift.toFixed(1)+'px)'; line2.style.transform='translateX('+(-shift).toFixed(1)+'px)';
     var op=(zoom!==null?0:1-out).toFixed(3); line1.style.opacity=op; line2.style.opacity=op; sub.style.opacity=op;
-    // 리본 — 바람에 날리는 현수막 (스크롤하기 전에는 보이지 않음)
-    var r=clamp((sp-0.03)/0.55), W=reduce?0:1;
-    ribbon.style.transform='rotateZ('+(-10+Math.sin(T*0.25)*1.4*W).toFixed(2)+'deg) rotateX('+(12+Math.sin(T*0.32+1)*2*W).toFixed(2)+'deg)';
-    var head=lerp(-0.14,1+N*du+0.14,r), A=amp*W, e=du/S;
-    // 띠의 중심선: 원호를 따라가며, 면 앞뒤로 크게 부푸는 물결을 더함
+    // 리본 — 글자 뒤로 지나감 (스크롤하기 전에는 보이지 않음)
+    var r=clamp((sp-0.03)/0.55);
+    ribbon.style.transform='rotateZ(-10deg) rotateX(12deg)';
+    var head=lerp(-0.14,1+N*du+0.14,r), e=du/4;
     var P=function(u){
       var rad=lerp(PHI0,PHI1,u)*Math.PI/180;
-      var n=(Math.sin(u*7-T*0.9)*70+Math.sin(u*13-T*1.4+1.7)*22)*A;
-      return [(RAD+n)*Math.sin(rad), lerp(380,-440,u)+Math.sin(u*Math.PI*2)*40+Math.sin(u*5-T*0.7)*22*A, (RAD+n)*Math.cos(rad)-260];
+      return [RAD*Math.sin(rad), lerp(380,-440,u)+Math.sin(u*Math.PI*2)*40, RAD*Math.cos(rad)-260];
     };
-    var L=[-0.38,-0.55,0.74], H=[-0.2,-0.29,0.94];   // 빛(왼쪽 위 앞), 반사광 방향
-    for(var j=0;j<strips.length;j++){
-      var st=strips[j], u=head-st.pi*du+(st.k+0.5-S/2)*e;
+    for(var i=0;i<N;i++){
+      var pe=panels[i], u=head-i*du;
       var fade=smooth(clamp((u+0.1)/0.14))*smooth(clamp((1.12-u)/0.14));
-      st.style.opacity=fade.toFixed(3); st.style.visibility=fade<=0.002?'hidden':'visible';
+      pe.style.opacity=fade.toFixed(3); pe.style.visibility=fade<=0.002?'hidden':'visible';
       if(fade<=0.002) continue;
-      var a=P(u-e/2), b=P(u+e/2), c=P(u);
-      var tx=b[0]-a[0], ty=b[1]-a[1], tz=b[2]-a[2], hz=Math.sqrt(tx*tx+tz*tz), len=Math.sqrt(hz*hz+ty*ty);
-      var yaw=Math.atan2(-tz,tx), tilt=Math.atan2(ty,hz);
-      var tw=(Math.sin(u*3.2-T*0.45)*30+Math.sin(u*8-T*0.8)*8)*A*Math.PI/180;   // 긴 축을 따라 비틀림
-      // 면의 방향(법선)으로 명암 계산
-      var sa=Math.sin(tw), ca=Math.cos(tw), sb=Math.sin(tilt), cb=Math.cos(tilt), sc=Math.sin(yaw), cc=Math.cos(yaw);
-      var nx=sa*sb*cc+ca*sc, ny=-sa*cb, nz=-sa*sb*sc+ca*cc, back=nz<0;
-      if(back){nx=-nx;ny=-ny;nz=-nz;}
-      var dif=Math.max(0,nx*L[0]+ny*L[1]+nz*L[2]), spec=Math.pow(Math.max(0,nx*H[0]+ny*H[1]+nz*H[2]),28);
-      st.sh.style.opacity=Math.min(0.72,0.6-0.55*dif+(back?0.12:0)).toFixed(3);
-      st.gl.style.opacity=(spec*0.5*(back?0.4:1)).toFixed(3);
-      st.style.transform='translate3d('+c[0].toFixed(1)+'px,'+c[1].toFixed(1)+'px,'+c[2].toFixed(1)+'px) rotateY('+(yaw*57.2958).toFixed(2)+'deg) rotateZ('+(tilt*57.2958).toFixed(2)+'deg) rotateX('+(tw*57.2958).toFixed(2)+'deg) scaleX('+(len/SW*1.025).toFixed(3)+')';
+      var a=P(u-e), b=P(u+e), c=P(u);
+      var tx=b[0]-a[0], ty=b[1]-a[1], tz=b[2]-a[2], hz=Math.sqrt(tx*tx+tz*tz);
+      var yaw=Math.atan2(-tz,tx), tilt=Math.atan2(ty,hz), len=Math.sqrt(hz*hz+ty*ty)*(du/(2*e));
+      // 정면을 볼수록 밝고, 옆으로 돌수록·뒷면일수록 어둡게
+      var face=Math.cos(yaw);
+      pe.sh.style.opacity=Math.min(0.55,(1-Math.abs(face))*0.4+(face<0?0.15:0)).toFixed(3);
+      pe.style.transform='translate3d('+c[0].toFixed(1)+'px,'+c[1].toFixed(1)+'px,'+c[2].toFixed(1)+'px) rotateY('+(yaw*57.2958).toFixed(2)+'deg) rotateZ('+(tilt*57.2958).toFixed(2)+'deg) scaleX('+(len/CW).toFixed(3)+')';
     }
     // 격자
     var g=clamp((sp-0.5)/0.44), cols=mobile?2:3;
@@ -335,7 +319,7 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
       a.style.width=cw+'px'; a.style.height=chh+'px'; a.style.left=(-cw/2)+'px'; a.style.top=(-chh/2)+'px'; a.style.padding=(mobile?'12px':'16px');
       var k=smooth(clamp((g-i*0.085)/0.5));
       var x=lerp(gx+980-col*120,gx,k), y=lerp(gy+420+row*80,gy,k), z=lerp(-420,0,k);
-      var tf='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+lerp(-38,0,k).toFixed(2)+'deg) rotateX('+(lerp(18,0,k)+Math.sin(k*Math.PI*2-T*1.2)*(1-k)*6*(reduce?0:1)).toFixed(2)+'deg) rotateZ('+lerp(9,0,k).toFixed(2)+'deg) scale('+inv.toFixed(3)+')';
+      var tf='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+lerp(-38,0,k).toFixed(2)+'deg) rotateZ('+lerp(9,0,k).toFixed(2)+'deg) scale('+inv.toFixed(3)+')';
       var o=clamp(k*2.5);
       if(zoom!==null){ if(zoom===i){tf='translate3d(0px,0px,'+(mobile?120:420)+'px) scale('+(1.3*inv).toFixed(3)+')';o=1;} else o=0; }
       a.style.transform=tf; a.style.opacity=o.toFixed(3);
@@ -349,7 +333,7 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   function onScroll(){
     var rc=intro.getBoundingClientRect(), total=rc.height-window.innerHeight;
     p=total>0?clamp(-rc.top/total):0;
-    if(reduce){ sp=p; render(); } else { active=rc.bottom>0; if(active&&!running){ running=true; last=0; requestAnimationFrame(tick); } }
+    if(reduce||rc.bottom<=0){ sp=p; render(); } else if(!running){ running=true; last=0; requestAnimationFrame(tick); }
     var hh=header.offsetHeight; document.documentElement.style.setProperty('--hh',(hh+8)+'px');
     var cur='';
     ['about','work','graphic','contact'].forEach(function(id){ var n=$(id); if(n && n.getBoundingClientRect().top<hh+60) cur=id; });
@@ -357,16 +341,13 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
     navLinks.forEach(function(a){ var on=a.getAttribute('data-sec')===cur; a.style.background=on?'rgba(17,17,17,0.1)':''; if(on) a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current'); });
     if(rc.bottom<0) toTop.classList.add('show'); else toTop.classList.remove('show');
   }
-  var running=false, active=true, last=0, t0=0;
+  var running=false, last=0;
   function tick(now){
-    if(!t0) t0=now;
-    var dt=last?Math.min(0.05,(now-last)/1000):0.016; last=now; T=(now-t0)/1000;
-    inE=smooth(clamp((T-0.2)/1.8));
-    sp+=(p-sp)*(1-Math.exp(-dt*2.6));                       // 스크롤을 관성 있게 따라감
-    if(Math.abs(p-sp)<0.0001) sp=p;
-    amp+=((1+Math.min(0.6,Math.abs(p-sp)*12))-amp)*(1-Math.exp(-dt*1.5));   // 빨리 내리면 더 세게 펄럭
+    var dt=last?Math.min(0.05,(now-last)/1000):0.016; last=now;
+    sp+=(p-sp)*(1-Math.exp(-dt*2.6));                     // 스크롤을 관성 있게 따라감
+    if(Math.abs(p-sp)<0.0002) sp=p;
     render();
-    if(active) requestAnimationFrame(tick); else running=false;
+    if(sp!==p) requestAnimationFrame(tick); else running=false;
   }
   toTop.addEventListener('click',function(){ window.scrollTo({top:0,behavior:'smooth'}); });
   var raf=0; window.addEventListener('scroll',function(){ if(!raf) raf=requestAnimationFrame(function(){raf=0;onScroll();}); },{passive:true});
