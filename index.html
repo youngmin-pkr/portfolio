@@ -294,9 +294,25 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
       var rad=lerp(PHI0,PHI1,u)*Math.PI/180;
       return [RAD*Math.sin(rad), lerp(380,-440,u)+Math.sin(u*Math.PI*2)*40, RAD*Math.cos(rad)-260];
     };
+    // 글자 영역(center 기준 좌표). 카드가 이 근처를 지나면 흐려져서 글자가 잘 읽히게 함
+    var tv=1-out, boxes=[[line1,shift],[line2,-shift],[sub,0]].map(function(q){
+      var el=q[0], l=el.offsetLeft+q[1]; return [l-12,el.offsetTop-12,l+el.offsetWidth+12,el.offsetTop+el.offsetHeight+12];
+    });
+    var RZ=-10*Math.PI/180, RX=12*Math.PI/180, FP=1100;
     for(var i=0;i<N;i++){
       var pe=panels[i], u=head-i*du;
       var fade=smooth(clamp((u+0.1)/0.14))*smooth(clamp((1.12-u)/0.14));
+      if(fade>0.002 && tv>0){
+        // 카드 중심을 화면에 투영해서 글자 상자와의 거리 계산
+        var q=P(u), y1=q[1]*Math.cos(RX)-q[2]*Math.sin(RX), z1=q[1]*Math.sin(RX)+q[2]*Math.cos(RX);
+        var x2=q[0]*Math.cos(RZ)-y1*Math.sin(RZ), y2=q[0]*Math.sin(RZ)+y1*Math.cos(RZ), kk=FP/Math.max(200,FP-z1);
+        var px=x2*kk, py=y2*kk, hw=CW/2*kk*0.8, hh=CH/2*kk*0.8, gap=1e9;
+        boxes.forEach(function(bx){
+          var dx=Math.max(bx[0]-(px+hw),(px-hw)-bx[2],0), dy=Math.max(bx[1]-(py+hh),(py-hh)-bx[3],0);
+          gap=Math.min(gap,Math.sqrt(dx*dx+dy*dy));
+        });
+        fade*=1-0.85*tv*(1-smooth(clamp(gap/90)));
+      }
       pe.style.opacity=fade.toFixed(3); pe.style.visibility=fade<=0.002?'hidden':'visible';
       if(fade<=0.002) continue;
       var a=P(u-e), b=P(u+e), c=P(u);
