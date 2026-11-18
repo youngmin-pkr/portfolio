@@ -28,7 +28,10 @@ button[style*="border: 1px solid #111111"]:hover{background:#111111 !important;c
 .pf-fade{animation:pfFade .8s ease 1s both}
 #cards a{position:absolute;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;text-decoration:none;box-shadow:0 16px 36px rgba(0,0,0,.14)}
 #cards a:hover{box-shadow:0 0 0 3px #111111,0 16px 36px rgba(0,0,0,.2)}
-#ribbon div{position:absolute;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:visible}
+#ribbon div{position:absolute;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:visible;will-change:transform,opacity}
+#ribbon .sh,#ribbon .gl{position:absolute;inset:0;pointer-events:none;opacity:0}
+#ribbon .sh{background:#000}
+#ribbon .gl{background:linear-gradient(105deg,rgba(255,255,255,0) 25%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 75%)}
 section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 #cards.compact a .im,#cards.compact a .sb{display:none !important}
 #cards.compact a .tt{font-size:17px !important}
@@ -256,7 +259,8 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   for(var i=0;i<N;i++){
     var d=DATA[i%DATA.length], el=document.createElement('div');
     el.style.cssText='left:-122px;top:-86px;width:244px;height:172px;padding:12px;background:'+d.bg+';color:'+d.fg+';';
-    el.innerHTML='<span style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.08em"><span>'+label(d)+'</span><span>'+d.tag+'</span></span><span style="font-size:22px;font-weight:900;line-height:1.05;letter-spacing:-.03em">'+d.title+'</span><span style="height:44px;background:'+d.block+'"></span>';
+    el.innerHTML='<span style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.08em"><span>'+label(d)+'</span><span>'+d.tag+'</span></span><span style="font-size:22px;font-weight:900;line-height:1.05;letter-spacing:-.03em">'+d.title+'</span><span style="height:44px;background:'+d.block+'"></span><i class="sh"></i><i class="gl"></i>';
+    el.sh=el.querySelector('.sh'); el.gl=el.querySelector('.gl');
     ribbon.appendChild(el); panels.push(el);
   }
   // 격자 카드 (선택하면 상세로)
@@ -271,31 +275,48 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
     cardsEl.appendChild(a); return a;
   });
 
-  var p=0, zoom=null;
+  var p=0, sp=0, zoom=null;            // p: 실제 스크롤 위치, sp: 부드럽게 따라가는 위치
+  var reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var T=0, inE=reduce?1:0, amp=1;      // T: 경과 시간(초), inE: 첫 등장 정도, amp: 바람 세기
   function render(){
     var vw=window.innerWidth, vh=window.innerHeight, mobile=vw<760;
     var s=Math.max(0.36,Math.min(1,vw/1320, vh/860));
     center.style.transform='scale('+s.toFixed(3)+')';
     // 글자
-    var cross=smooth(clamp((p-0.2)/0.32)), out=smooth(clamp((p-0.52)/0.14));
+    var cross=smooth(clamp((sp-0.2)/0.32)), out=smooth(clamp((sp-0.52)/0.14));
     var shift=(mobile?260:430)*cross;
     if(mobile){ line1.style.left='-380px'; line1.style.width='760px'; line1.style.textAlign='center'; line2.style.left='-380px'; line2.style.width='760px'; line2.style.textAlign='center'; line2.style.top='-20px'; line1.style.top='-150px'; sub.style.top='120px'; sub.style.fontSize=(11/s).toFixed(1)+'px'; sub.style.width='760px'; sub.style.left='-380px'; }
     else { line1.style.top='-150px'; line1.style.left='auto'; line1.style.right='0'; line1.style.width='auto'; line1.style.textAlign='right'; line2.style.left='0'; line2.style.width='auto'; line2.style.textAlign='left'; line2.style.top='24px'; sub.style.top='-36px'; sub.style.fontSize=Math.max(10,11/s).toFixed(1)+'px'; sub.style.width='320px'; sub.style.left='-160px'; }
     line1.style.transform='translateX('+shift.toFixed(1)+'px)'; line2.style.transform='translateX('+(-shift).toFixed(1)+'px)';
     var op=(zoom!==null?0:1-out).toFixed(3); line1.style.opacity=op; line2.style.opacity=op; sub.style.opacity=op;
-    // 리본
-    var r=clamp((p-0.03)/0.55);
-    ribbon.style.transform='rotateZ(-10deg) rotateX(12deg)';
-    ribbon.style.opacity=(r<=0||r>=1)?0:1;
-    var head=lerp(-0.05,1+N*du+0.05,r);
+    // 리본 — 바람에 날리는 현수막
+    var r=clamp((sp-0.03)/0.55), W=reduce?0:1;
+    ribbon.style.transform='rotateZ('+(-10+Math.sin(T*0.45)*1.6*W).toFixed(2)+'deg) rotateX('+(12+Math.sin(T*0.6+1)*2.4*W).toFixed(2)+'deg)';
+    ribbon.style.opacity=1;
+    var head=lerp(-0.05+0.07*inE,1+N*du+0.05,r);   // 첫 화면에서도 끝자락이 왼쪽 아래에서 살랑거림
     for(var i=0;i<N;i++){
       var u=head-i*du, phi=lerp(PHI0,PHI1,u), rad=phi*Math.PI/180;
-      var x=RAD*Math.sin(rad), z=RAD*Math.cos(rad)-260, y=lerp(380,-440,u)+Math.sin(u*Math.PI*2)*40, tw=Math.sin(u*Math.PI)*-6;
-      panels[i].style.opacity=(u<-0.12||u>1.12)?0:1;
-      panels[i].style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+phi.toFixed(2)+'deg) rotateZ('+tw.toFixed(2)+'deg)';
+      // 리본을 따라 흐르는 두 겹의 물결 (천이 펄럭이는 움직임)
+      var a1=u*9-T*2.1, a2=u*17-T*3.3+1.7, A=amp*W;
+      var n=(Math.sin(a1)*46+Math.sin(a2)*14)*A;                     // 면 앞뒤로 부푸는 양
+      var dn=(Math.cos(a1)*46*9+Math.cos(a2)*14*17)*A;               // 그 기울기
+      var fy=Math.atan2(dn,arcLen)*180/Math.PI;                       // 좌우로 접히는 각
+      var fx=(Math.sin(a1*0.8+0.6)*11+Math.sin(a2)*4)*A;              // 위아래로 들리는 각
+      var x=(RAD+n)*Math.sin(rad), z=(RAD+n)*Math.cos(rad)-260;
+      var y=lerp(380,-440,u)+Math.sin(u*Math.PI*2)*40+Math.sin(u*6-T*1.6)*16*A;
+      var tw=Math.sin(u*Math.PI)*-6+Math.sin(a1+0.4)*3*A;
+      var fade=smooth(clamp((u+0.1)/0.16))*smooth(clamp((1.12-u)/0.14))*inE;
+      var pe=panels[i];
+      pe.style.opacity=fade.toFixed(3); pe.style.visibility=fade<=0.002?'hidden':'visible';
+      if(fade<=0.002) continue;
+      pe.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+(phi+fy).toFixed(2)+'deg) rotateX('+fx.toFixed(2)+'deg) rotateZ('+tw.toFixed(2)+'deg)';
+      // 빛: 정면을 볼수록 밝고, 옆·뒷면일수록 어둡게. 물결 마루에 광택
+      var c=Math.cos((phi+fy)*Math.PI/180);
+      pe.sh.style.opacity=Math.min(0.6,0.03+(1-Math.abs(c))*0.3+(c<0?0.14:0)+Math.max(0,fx)*0.012).toFixed(3);
+      var gl=Math.max(0,Math.sin(a1+0.9)); pe.gl.style.opacity=(gl*gl*(c>0?0.55:0.2)*W).toFixed(3);
     }
     // 격자
-    var g=clamp((p-0.5)/0.44), cols=mobile?2:3;
+    var g=clamp((sp-0.5)/0.44), cols=mobile?2:3;
     cardsEl.className=mobile?'compact':'';
     var cw,chh,gap,inv;
     if(mobile){ gap=12; cw=Math.floor((vw-40-gap)/2); chh=Math.round(cw*0.66); inv=1/s; }
@@ -306,7 +327,7 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
       a.style.width=cw+'px'; a.style.height=chh+'px'; a.style.left=(-cw/2)+'px'; a.style.top=(-chh/2)+'px'; a.style.padding=(mobile?'12px':'16px');
       var k=smooth(clamp((g-i*0.085)/0.5));
       var x=lerp(gx+980-col*120,gx,k), y=lerp(gy+420+row*80,gy,k), z=lerp(-420,0,k);
-      var tf='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+lerp(-38,0,k).toFixed(2)+'deg) rotateZ('+lerp(9,0,k).toFixed(2)+'deg) scale('+inv.toFixed(3)+')';
+      var tf='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+lerp(-38,0,k).toFixed(2)+'deg) rotateX('+(lerp(18,0,k)+Math.sin(k*Math.PI*3-T*3)*(1-k)*8*(reduce?0:1)).toFixed(2)+'deg) rotateZ('+lerp(9,0,k).toFixed(2)+'deg) scale('+inv.toFixed(3)+')';
       var o=clamp(k*2.5);
       if(zoom!==null){ if(zoom===i){tf='translate3d(0px,0px,'+(mobile?120:420)+'px) scale('+(1.3*inv).toFixed(3)+')';o=1;} else o=0; }
       a.style.transform=tf; a.style.opacity=o.toFixed(3);
@@ -319,13 +340,25 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   var navLinks=[].slice.call(document.querySelectorAll('#siteHeader .nav-link')), toTop=$('toTop'), header=$('siteHeader');
   function onScroll(){
     var rc=intro.getBoundingClientRect(), total=rc.height-window.innerHeight;
-    p=total>0?clamp(-rc.top/total):0; render();
+    p=total>0?clamp(-rc.top/total):0;
+    if(reduce){ sp=p; render(); } else { active=rc.bottom>0; if(active&&!running){ running=true; last=0; requestAnimationFrame(tick); } }
     var hh=header.offsetHeight; document.documentElement.style.setProperty('--hh',(hh+8)+'px');
     var cur='';
     ['about','work','graphic','contact'].forEach(function(id){ var n=$(id); if(n && n.getBoundingClientRect().top<hh+60) cur=id; });
     if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) cur='contact';
     navLinks.forEach(function(a){ var on=a.getAttribute('data-sec')===cur; a.style.background=on?'rgba(17,17,17,0.1)':''; if(on) a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current'); });
     if(rc.bottom<0) toTop.classList.add('show'); else toTop.classList.remove('show');
+  }
+  var running=false, active=true, last=0, t0=0;
+  function tick(now){
+    if(!t0) t0=now;
+    var dt=last?Math.min(0.05,(now-last)/1000):0.016; last=now; T=(now-t0)/1000;
+    inE=smooth(clamp((T-0.2)/1.8));
+    sp+=(p-sp)*(1-Math.exp(-dt*5));                       // 스크롤을 관성 있게 따라감
+    if(Math.abs(p-sp)<0.0001) sp=p;
+    amp+=((1+Math.min(1.6,Math.abs(p-sp)*35))-amp)*(1-Math.exp(-dt*3));   // 빨리 내리면 더 세게 펄럭
+    render();
+    if(active) requestAnimationFrame(tick); else running=false;
   }
   toTop.addEventListener('click',function(){ window.scrollTo({top:0,behavior:'smooth'}); });
   var raf=0; window.addEventListener('scroll',function(){ if(!raf) raf=requestAnimationFrame(function(){raf=0;onScroll();}); },{passive:true});
