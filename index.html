@@ -28,7 +28,7 @@ button[style*="border: 1px solid #111111"]:hover{background:#111111 !important;c
 .pf-fade{animation:pfFade .8s ease 1s both}
 #cards a{position:absolute;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;text-decoration:none;box-shadow:0 16px 36px rgba(0,0,0,.14)}
 #cards a:hover{box-shadow:0 0 0 3px #111111,0 16px 36px rgba(0,0,0,.2)}
-#ribbon>div{position:absolute;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:visible}
+#ribbon>div{position:absolute;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:hidden}
 #ribbon .sh{position:absolute;inset:0;pointer-events:none;opacity:0}
 #ribbon .sh{background:#000}
 section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
@@ -252,9 +252,15 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   var clamp=function(v){return Math.max(0,Math.min(1,v));}, smooth=function(v){return v*v*(3-2*v);}, lerp=function(a,b,k){return a+(b-a)*k;};
   var bez=function(a,b,c,k){return (1-k)*(1-k)*a+2*(1-k)*k*b+k*k*c;};
 
-  // 리본 — 카드 22장을 원호를 따라 이어 붙인 띠
-  var N=22, RAD=720, CW=244, CH=172, PHI0=-125, PHI1=125;
-  var arcLen=RAD*(PHI1-PHI0)*Math.PI/180, du=CW/arcLen, panels=[];
+  // 리본 — 카드 22장이 하나로 이어진 띠. 화면 밖 왼쪽 아래에서 들어와 글자 뒤를 지나 오른쪽 위 화면 밖으로 나감
+  var N=22, CW=244, CH=172, STEP=CW+6, panels=[];
+  // 띠가 지나가는 길: 대각선으로 완만하게 휘고, 가운데에서 살짝 앞으로 다가옴
+  var P=function(t){ return [lerp(-1350,1350,t), lerp(660,-660,t)-Math.sin(t*Math.PI)*70, -320+Math.sin(t*Math.PI)*380]; };
+  // 길이를 기준으로 위치를 찾을 수 있게 미리 재 둠 (카드 간격과 속도가 일정하도록)
+  var LUT=[0], prev=P(0);
+  for(var j=1;j<=400;j++){ var cur=P(j/400); LUT.push(LUT[j-1]+Math.hypot(cur[0]-prev[0],cur[1]-prev[1],cur[2]-prev[2])); prev=cur; }
+  var pathLen=LUT[400];
+  var atLen=function(L){ var lo=0,hi=400; while(hi-lo>1){ var m=(lo+hi)>>1; if(LUT[m]<L) lo=m; else hi=m; } return (lo+(L-LUT[lo])/(LUT[hi]-LUT[lo]||1))/400; };
   for(var i=0;i<N;i++){
     var d=DATA[i%DATA.length], el=document.createElement('div');
     el.style.cssText='left:'+(-CW/2)+'px;top:'+(-CH/2)+'px;width:'+CW+'px;height:'+CH+'px;padding:12px;background:'+d.bg+';color:'+d.fg+';';
@@ -288,40 +294,36 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
     var op=(zoom!==null?0:1-out).toFixed(3); line1.style.opacity=op; line2.style.opacity=op; sub.style.opacity=op;
     // 리본 — 글자 뒤로 지나감 (스크롤하기 전에는 보이지 않음)
     var r=clamp((sp-0.03)/0.55);
-    ribbon.style.transform='rotateZ(-10deg) rotateX(12deg)';
-    var head=lerp(-0.14,1+N*du+0.14,r), e=du/4;
-    var P=function(u){
-      var rad=lerp(PHI0,PHI1,u)*Math.PI/180;
-      return [RAD*Math.sin(rad), lerp(380,-440,u)+Math.sin(u*Math.PI*2)*40, RAD*Math.cos(rad)-260];
-    };
+    var head=lerp(0,pathLen+N*STEP,r);
     // 글자 영역(center 기준 좌표). 카드가 이 근처를 지나면 흐려져서 글자가 잘 읽히게 함
-    var tv=1-out, boxes=[[line1,shift],[line2,-shift],[sub,0]].map(function(q){
-      var el=q[0], l=el.offsetLeft+q[1]; return [l-12,el.offsetTop-12,l+el.offsetWidth+12,el.offsetTop+el.offsetHeight+12];
+    // 실제 글자 모양의 범위를 재서 center 기준 좌표로 바꿈
+    var cr=center.getBoundingClientRect(), RS=mobile?1.5:1;
+    var tv=1-out, boxes=[line1,line2,sub].map(function(el){
+      var rg=document.createRange(); rg.selectNodeContents(el); var q=rg.getBoundingClientRect();
+      return [(q.left-cr.left)/s-12,(q.top-cr.top)/s-12,(q.right-cr.left)/s+12,(q.bottom-cr.top)/s+12];
     });
-    var RZ=-10*Math.PI/180, RX=12*Math.PI/180, FP=1100;
+    ribbon.style.transform='scale('+RS+') rotateX(8deg)';   // 모바일에서는 카드가 너무 작아지지 않게 키움
+    var RX=8*Math.PI/180, FP=1100;
     for(var i=0;i<N;i++){
-      var pe=panels[i], u=head-i*du;
-      var fade=smooth(clamp((u+0.1)/0.14))*smooth(clamp((1.12-u)/0.14));
-      if(fade>0.002 && tv>0){
+      var pe=panels[i], L=head-i*STEP-CW/2;
+      if(L<0||L>pathLen){ pe.style.visibility='hidden'; continue; }
+      var t=atLen(L), c=P(t), a=P(Math.max(0,t-0.004)), b=P(Math.min(1,t+0.004));
+      var fade=smooth(clamp(L/200))*smooth(clamp((pathLen-L)/200));   // 양 끝(화면 밖)에서만 서서히
+      if(tv>0){
         // 카드 중심을 화면에 투영해서 글자 상자와의 거리 계산
-        var q=P(u), y1=q[1]*Math.cos(RX)-q[2]*Math.sin(RX), z1=q[1]*Math.sin(RX)+q[2]*Math.cos(RX);
-        var x2=q[0]*Math.cos(RZ)-y1*Math.sin(RZ), y2=q[0]*Math.sin(RZ)+y1*Math.cos(RZ), kk=FP/Math.max(200,FP-z1);
-        var px=x2*kk, py=y2*kk, hw=CW/2*kk*0.8, hh=CH/2*kk*0.8, gap=1e9;
+        var y1=c[1]*Math.cos(RX)-c[2]*Math.sin(RX), z1=c[1]*Math.sin(RX)+c[2]*Math.cos(RX), kk=FP/Math.max(200,FP-z1);
+        var px=c[0]*kk*RS, py=y1*kk*RS, hw=CW/2*kk*0.8*RS, hh=CH/2*kk*0.8*RS, gp=1e9;
         boxes.forEach(function(bx){
           var dx=Math.max(bx[0]-(px+hw),(px-hw)-bx[2],0), dy=Math.max(bx[1]-(py+hh),(py-hh)-bx[3],0);
-          gap=Math.min(gap,Math.sqrt(dx*dx+dy*dy));
+          gp=Math.min(gp,Math.sqrt(dx*dx+dy*dy));
         });
-        fade*=1-0.85*tv*(1-smooth(clamp(gap/90)));
+        fade*=1-0.85*tv*(1-smooth(clamp(gp/90)));
       }
-      pe.style.opacity=fade.toFixed(3); pe.style.visibility=fade<=0.002?'hidden':'visible';
-      if(fade<=0.002) continue;
-      var a=P(u-e), b=P(u+e), c=P(u);
+      pe.style.visibility='visible'; pe.style.opacity=fade.toFixed(3);
       var tx=b[0]-a[0], ty=b[1]-a[1], tz=b[2]-a[2], hz=Math.sqrt(tx*tx+tz*tz);
-      var yaw=Math.atan2(-tz,tx), tilt=Math.atan2(ty,hz), len=Math.sqrt(hz*hz+ty*ty)*(du/(2*e));
-      // 정면을 볼수록 밝고, 옆으로 돌수록·뒷면일수록 어둡게
-      var face=Math.cos(yaw);
-      pe.sh.style.opacity=Math.min(0.55,(1-Math.abs(face))*0.4+(face<0?0.15:0)).toFixed(3);
-      pe.style.transform='translate3d('+c[0].toFixed(1)+'px,'+c[1].toFixed(1)+'px,'+c[2].toFixed(1)+'px) rotateY('+(yaw*57.2958).toFixed(2)+'deg) rotateZ('+(tilt*57.2958).toFixed(2)+'deg) scaleX('+(len/CW).toFixed(3)+')';
+      var yaw=Math.atan2(-tz,tx), tilt=Math.atan2(ty,hz);
+      pe.sh.style.opacity=((1-Math.cos(yaw))*0.5).toFixed(3);    // 옆으로 돌수록 조금 어둡게
+      pe.style.transform='translate3d('+c[0].toFixed(1)+'px,'+c[1].toFixed(1)+'px,'+c[2].toFixed(1)+'px) rotateY('+(yaw*57.2958).toFixed(2)+'deg) rotateZ('+(tilt*57.2958).toFixed(2)+'deg)';
     }
     // 격자
     var g=clamp((sp-0.5)/0.44), cols=mobile?2:3;
@@ -334,9 +336,9 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
       var gx=(col-(cols-1)/2)*(cw+gap)*inv, gy=((row-(rows-1)/2)*(chh+gap)+10)*inv;
       a.style.width=cw+'px'; a.style.height=chh+'px'; a.style.left=(-cw/2)+'px'; a.style.top=(-chh/2)+'px'; a.style.padding=(mobile?'12px':'16px');
       var k=smooth(clamp((g-i*0.085)/0.5));
-      var x=lerp(gx+980-col*120,gx,k), y=lerp(gy+420+row*80,gy,k), z=lerp(-420,0,k);
-      var tf='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+lerp(-38,0,k).toFixed(2)+'deg) rotateZ('+lerp(9,0,k).toFixed(2)+'deg) scale('+inv.toFixed(3)+')';
-      var o=clamp(k*2.5);
+      var x=gx, y=gy+lerp(48,0,k)*inv, z=lerp(-160,0,k);
+      var tf='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) scale('+inv.toFixed(3)+')';
+      var o=clamp(k*1.4);
       if(zoom!==null){ if(zoom===i){tf='translate3d(0px,0px,'+(mobile?120:420)+'px) scale('+(1.3*inv).toFixed(3)+')';o=1;} else o=0; }
       a.style.transform=tf; a.style.opacity=o.toFixed(3);
       a.style.transition=zoom!==null?'transform .5s cubic-bezier(.2,.7,.2,1), opacity .35s ease':'box-shadow .2s ease';
