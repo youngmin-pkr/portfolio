@@ -29,19 +29,22 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 #top{position:relative;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:#D6D6C9}
 #heroName,#heroWord{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;white-space:nowrap;font-weight:900;line-height:.86;pointer-events:none}
 #heroName{font-size:min(17.2vw,34vh);letter-spacing:-0.04em;color:#B9BAA3}
-#heroWord{font-size:min(15.4vw,30vh);letter-spacing:-0.02em;color:#111111}
+#heroWord{font-size:min(11.1vw,26vh);letter-spacing:-0.02em;color:#111111}
 #heroName span,#heroWord span{display:inline}
 #hero3d{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .4s ease;pointer-events:none}
 #top.has3d #hero3d{opacity:1}
 #top.has3d #heroWord{color:transparent}
-#hint{position:absolute;left:32px;bottom:24px;display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:12px;font-weight:700;letter-spacing:.14em;color:#111111;text-decoration:none}
+#heroBar{position:absolute;left:32px;right:32px;bottom:24px;display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:16px}
+#heroMeta{margin:0;font-size:12px;line-height:1.5;font-weight:700;letter-spacing:.08em;color:#111111}
+#hint{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:12px;font-weight:700;letter-spacing:.14em;color:#111111;text-decoration:none}
 #siteHeader.on-hero{background:transparent !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
 @media (max-width: 760px){
   #heroName,#heroWord{line-height:.9}
   #heroName span,#heroWord span{display:block}
   #heroName{font-size:min(25.4vw,20vh)}
-  #heroWord{font-size:min(29vw,18vh)}
-  #hint{left:20px;bottom:16px}
+  #heroWord{font-size:min(25vw,15vh)}
+  #heroBar{left:20px;right:20px;bottom:16px;grid-template-columns:1fr auto}
+  #hint{display:none}
 }
 @media (max-width: 760px){
   #siteHeader{padding:6px 10px !important;flex-wrap:nowrap !important}
@@ -76,7 +79,10 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   <p id="heroName" aria-hidden="true"><span>YOUNG</span><span>MIN</span></p>
   <canvas id="hero3d" aria-hidden="true"></canvas>
   <p id="heroWord" aria-hidden="true"><span>PORT</span><span>FOLIO</span></p>
-  <a id="hint" href="#about">SCROLL DOWN <span aria-hidden="true">↓</span></a>
+  <div id="heroBar">
+    <p id="heroMeta">UI/UX DESIGNER<br>PARK YOUNGMIN · 2026</p>
+    <a id="hint" href="#about">SCROLL DOWN <span aria-hidden="true">↓</span></a>
+  </div>
 </section>
 <section id="about" style="scroll-margin-top: 76px; background: #EBEBEB; padding: 120px 0;">
     <div style="max-width: 1240px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; gap: 64px;">
@@ -927,7 +933,7 @@ async function start() {
     document.fonts.load('900 200px Inter')
   ]);
 
-  const WORD = 'PORTFOLIO', COLOR = 0x111111;
+  const WORD = 'PORTFOLIO', COLOR = 0x1a1a1a;
   const isMobile = () => innerWidth < 760;
   const lowSpec = isMobile() || (navigator.hardwareConcurrency || 8) <= 4;
 
@@ -989,7 +995,7 @@ async function start() {
     for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
     back.computeVertexNormals();
     const tex = new THREE.CanvasTexture(g.c);
-    const mat = new THREE.MeshPhysicalMaterial({ color: COLOR, roughness: 0.3, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05, alphaMap: tex, alphaTest: 0.5, side: THREE.DoubleSide });
+    const mat = new THREE.MeshPhysicalMaterial({ color: COLOR, roughness: 0.62, metalness: 0, clearcoat: 0, sheen: 0.6, sheenRoughness: 0.5, sheenColor: 0x6a6a60, alphaMap: tex, alphaTest: 0.5, side: THREE.DoubleSide });
     const grp = new THREE.Group();
     grp.add(new THREE.Mesh(front, mat), new THREE.Mesh(back, mat));
     return grp;
@@ -1031,7 +1037,7 @@ async function start() {
       const mid = (left + right) / 2;
       wordW = Math.max(wordW, (right - left) / capH);
       const y = rows.length === 1 ? 0 : (r === 0 ? 0.64 : -0.64);
-      items.forEach((l, k) => { l.hx = (cxs[k] - mid) / capH; l.hy = y + (k % 2 ? -0.035 : 0.035); });
+      items.forEach((l, k) => { l.hx = (cxs[k] - mid) / capH; l.hy = y; });
     });
   }
 
@@ -1049,7 +1055,7 @@ async function start() {
     const cr = canvas.getBoundingClientRect(), lr = word2d.getBoundingClientRect();
     view.top = cr.top; view.left = cr.left;
     // 1 단위(대문자 높이)당 픽셀: 화면 폭에 맞추되 높이도 넘지 않게
-    view.kpx = isMobile() ? Math.min(view.W * 0.84 / wordW, view.H * 0.13) : Math.min(view.W * 0.86 / wordW, view.H * 0.24);
+    view.kpx = isMobile() ? Math.min(view.W * 0.7 / wordW, view.H * 0.11) : Math.min(view.W * 0.6 / wordW, view.H * 0.19);
     view.ax = lr.left + lr.width / 2 - cr.left; view.ay = lr.top + lr.height / 2 - cr.top;
     word.scale.setScalar(view.kpx * view.wpp);
     word.position.set((view.ax - view.W / 2) * view.wpp, -(view.ay - view.H / 2) * view.wpp, 0);
@@ -1077,16 +1083,16 @@ async function start() {
       if (!l.active) { if (t > l.wake) { l.active = true; } else return; }
       if (ptr.on) { const inside = hit(l); if (inside && !l.inside) kick(l, 1); l.inside = inside; }
       const s = l.seed;
-      const fx = Math.sin(t * 0.83 + s) * 0.35 + Math.sin(t * 1.61 + s * 1.9) * 0.18;
-      const fy = Math.cos(t * 0.71 + s * 1.3) * 0.35 + Math.sin(t * 1.37 + s * 0.7) * 0.18;
+      const fx = Math.sin(t * 0.83 + s) * 0.06;
+      const fy = Math.cos(t * 0.71 + s * 1.3) * 0.08;
       l.v.x += ((l.hx - l.p.x) * 14 + fx) * dt;
       l.v.y += ((l.hy - l.p.y) * 14 + fy) * dt;
       l.v.z += (-l.p.z * 16) * dt;
       l.v.multiplyScalar(Math.exp(-3.2 * dt));
       l.p.addScaledVector(l.v, dt);
-      l.w.x += (-l.r.x * 12 + Math.sin(t * 1.1 + s) * 0.25) * dt;
-      l.w.y += (-l.r.y * 12 + Math.cos(t * 0.9 + s) * 0.3) * dt;
-      l.w.z += (-l.r.z * 12 + Math.sin(t * 0.7 + s * 2) * 0.15) * dt;
+      l.w.x += (-l.r.x * 12 + Math.sin(t * 1.1 + s) * 0.05) * dt;
+      l.w.y += (-l.r.y * 12 + Math.cos(t * 0.9 + s) * 0.06) * dt;
+      l.w.z += (-l.r.z * 12 + Math.sin(t * 0.7 + s * 2) * 0.03) * dt;
       l.w.multiplyScalar(Math.exp(-3 * dt));
       l.r.addScaledVector(l.w, dt);
       for (const c of ['x', 'y', 'z']) if (Math.abs(l.r[c]) > RMAX[c]) { l.r[c] = Math.sign(l.r[c]) * RMAX[c]; l.w[c] *= -0.4; }
