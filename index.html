@@ -20,25 +20,29 @@ button[style*="border: 1px solid #111111"]:hover{background:#111111 !important;c
   .m-hide{display:none !important}
 }
 
-@keyframes pfInL{from{translate:-70vw 0}to{translate:0 0}}
-@keyframes pfInR{from{translate:70vw 0}to{translate:0 0}}
-@keyframes pfFade{from{opacity:0}to{opacity:1}}
-.pf-in-l{animation:pfInL 1.4s cubic-bezier(.2,.75,.2,1) both}
-.pf-in-r{animation:pfInR 1.4s cubic-bezier(.2,.75,.2,1) both}
-.pf-fade{animation:pfFade .8s ease 1s both}
-#cards a{position:absolute;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;text-decoration:none;box-shadow:0 16px 36px rgba(0,0,0,.14)}
-#cards a:hover{box-shadow:0 0 0 3px #111111,0 16px 36px rgba(0,0,0,.2)}
-#ribbon div{position:absolute;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:visible}
 section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
-#cards.compact a .im,#cards.compact a .sb{display:none !important}
-#cards.compact a .tt{font-size:17px !important}
-#cards.compact a .tg{font-size:10px !important}
 #toTop.show{opacity:1 !important;pointer-events:auto !important}
 #toTop:hover{background:#111111 !important;color:#FFFFFF !important}
-@media (prefers-reduced-motion: reduce){.pf-in-l,.pf-in-r,.pf-fade{animation:none}html{scroll-behavior:auto}}
-/* 인트로 3D 글자: 준비되면 평면 PORTFOLIO는 숨기고(글자는 화면 읽기용으로 남김) 캔버스를 보여 준다 */
-#hero3d{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;pointer-events:none}
-#top.has3d #line2{color:transparent !important;transition:color .4s ease}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+.sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* 인트로: 배경 #D6D6C9, 뒤에 이름 YOUNGMIN(#B9BAA3), 앞에 검은 3D PORTFOLIO */
+#top{position:relative;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:#D6D6C9}
+#heroName,#heroWord{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;white-space:nowrap;font-weight:900;line-height:.86;pointer-events:none}
+#heroName{font-size:min(17.2vw,34vh);letter-spacing:-0.04em;color:#B9BAA3}
+#heroWord{font-size:min(15.4vw,30vh);letter-spacing:-0.02em;color:#111111}
+#heroName span,#heroWord span{display:inline}
+#hero3d{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .4s ease;pointer-events:none}
+#top.has3d #hero3d{opacity:1}
+#top.has3d #heroWord{color:transparent}
+#hint{position:absolute;left:32px;bottom:24px;display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:12px;font-weight:700;letter-spacing:.14em;color:#111111;text-decoration:none}
+#siteHeader.on-hero{background:transparent !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+@media (max-width: 760px){
+  #heroName,#heroWord{line-height:.9}
+  #heroName span,#heroWord span{display:block}
+  #heroName{font-size:min(25.4vw,20vh)}
+  #heroWord{font-size:min(29vw,18vh)}
+  #hint{left:20px;bottom:16px}
+}
 @media (max-width: 760px){
   #siteHeader{padding:6px 10px !important;flex-wrap:nowrap !important}
   #siteHeader>a{font-size:13px !important}
@@ -67,23 +71,12 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   </nav>
 </header>
 <button id="toTop" type="button" aria-label="맨 위로 가기" style="position: fixed; right: 20px; bottom: 20px; z-index: 90; width: 52px; height: 52px; border-radius: 50%; border: 1px solid #111111; background: #FFFFFF; color: #111111; font-size: 20px; font-weight: 700; cursor: pointer; opacity: 0; pointer-events: none;">↑</button>
-<section id="top" style="position: relative; height: 320vh;">
-  <div style="position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #C2C2C2;">
-    <canvas id="hero3d" aria-hidden="true"></canvas>
-    <div id="persp" style="position: absolute; inset: 0; perspective: 1500px; perspective-origin: 50% 45%;">
-      <div id="center" style="position: absolute; left: 50%; top: 52%; width: 0; height: 0; transform-style: preserve-3d;">
-        <div id="line1" class="pf-in-l" style="position: absolute; top: -150px; white-space: nowrap; font-size: 112px; line-height: 1; font-weight: 500; letter-spacing: -0.06em; color: #2E2E2E; pointer-events: none;">UI/UX DESIGN</div>
-        <p id="sub" style="position: absolute; left: -160px; top: -30px; width: 320px; margin: 0; text-align: center; font-size: 10px; line-height: 1.5; font-weight: 700; letter-spacing: 0.08em; color: #3A3A3A; pointer-events: none;"><span class="pf-fade" style="display: block;">I DESIGN HOW PEOPLE FLOW<br>BEFORE I DESIGN SCREENS<br>PARK YOUNGMIN · 2026</span></p>
-        <div id="line2" class="pf-in-r" style="position: absolute; top: 10px; white-space: nowrap; font-size: 112px; line-height: 1; font-weight: 500; letter-spacing: -0.06em; color: #2E2E2E; pointer-events: none;">PORTFOLIO</div>
-        <div id="ribbon" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d;"></div>
-        <div id="cards" style="position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d;"></div>
-      </div>
-    </div>
-    <div style="position: absolute; left: 32px; right: 32px; bottom: 28px; z-index: 30; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: flex-end; pointer-events: none;">
-      <p class="m-hide" style="margin: 0; max-width: 260px; font-size: 13px; line-height: 1.5; color: #2E2E2E;">화면보다 사람의 흐름을 먼저 그리는 UI/UX 디자이너 박영민의 작업 모음</p>
-      <p id="hint" style="margin: 0 0 0 auto; padding-bottom: 6px; border-bottom: 1px solid #2E2E2E; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: #2E2E2E;">SCROLL ↓</p>
-    </div>
-  </div>
+<section id="top" aria-labelledby="heroTitle">
+  <h1 id="heroTitle" class="sr-only">박영민(YOUNGMIN) UI/UX 디자인 포트폴리오</h1>
+  <p id="heroName" aria-hidden="true"><span>YOUNG</span><span>MIN</span></p>
+  <canvas id="hero3d" aria-hidden="true"></canvas>
+  <p id="heroWord" aria-hidden="true"><span>PORT</span><span>FOLIO</span></p>
+  <a id="hint" href="#about">SCROLL DOWN <span aria-hidden="true">↓</span></a>
 </section>
 <section id="about" style="scroll-margin-top: 76px; background: #EBEBEB; padding: 120px 0;">
     <div style="max-width: 1240px; margin: 0 auto; padding: 0 24px; display: flex; flex-direction: column; gap: 64px;">
@@ -239,92 +232,14 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   </footer>
 
 </div><script>(function(){
-  var ACC='#2B50D6';
-  var DATA=[
-    {num:'01',tag:'MAIN',title:'행사 동행 플랫폼',sub:'[서비스명] · 기획 · UX · UI',href:'#work-01',bg:ACC,fg:'#FFFFFF',block:'rgba(255,255,255,0.22)'},
-    {num:'01',tag:'MATCHING',title:'성향 매칭',sub:'템포 먼저, 몰입도는 그다음',href:'#work-01',bg:'#F2F2F0',fg:'#111111',block:'#DCDCDC'},
-    {num:'02',tag:'APP',title:'MOODI 감정 기록',sub:'오늘의 마음이 머무는 구름',href:'#work-02',bg:'#7960C9',fg:'#FFFFFF',block:'rgba(255,255,255,0.22)'},
-    {num:'01',tag:'TRUST',title:'티켓 인증',sub:'예매 내역 캡처로 안심',href:'#work-01',bg:'#FFFFFF',fg:'#111111',block:'#E3E3E3'},
-    {num:'02',tag:'STATS',title:'감정 통계',sub:'주간 · 월간 · 연간',href:'#work-02',bg:'#302744',fg:'#FFFFFF',block:'rgba(255,255,255,0.16)'},
-    {num:'GR',tag:'GRAPHIC',title:'그래픽 작업',sub:'배너 · 웹사이트 디자인 · 상세페이지',href:'#graphic',bg:'#E7A1C8',fg:'#111111',block:'rgba(255,255,255,0.35)'}
-  ];
-  var label=function(d){return d.num==='GR'?'GRAPHIC':'WORK '+d.num;};
   var $=function(id){return document.getElementById(id);};
-  var center=$('center'), ribbon=$('ribbon'), cardsEl=$('cards'), line1=$('line1'), line2=$('line2'), sub=$('sub'), hint=$('hint'), intro=$('top');
-  var clamp=function(v){return Math.max(0,Math.min(1,v));}, smooth=function(v){return v*v*(3-2*v);}, lerp=function(a,b,k){return a+(b-a)*k;};
-  var bez=function(a,b,c,k){return (1-k)*(1-k)*a+2*(1-k)*k*b+k*k*c;};
+  var ACC='#2B50D6', intro=$('top');
 
-  // 리본 패널
-  var N=22, RAD=720, CW=244, PHI0=-125, PHI1=125;
-  var arcLen=RAD*(PHI1-PHI0)*Math.PI/180, du=CW/arcLen, panels=[];
-  for(var i=0;i<N;i++){
-    var d=DATA[i%DATA.length], el=document.createElement('div');
-    el.style.cssText='left:-122px;top:-86px;width:244px;height:172px;padding:12px;background:'+d.bg+';color:'+d.fg+';';
-    el.innerHTML='<span style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:.08em"><span>'+label(d)+'</span><span>'+d.tag+'</span></span><span style="font-size:22px;font-weight:900;line-height:1.05;letter-spacing:-.03em">'+d.title+'</span><span style="height:44px;background:'+d.block+'"></span>';
-    ribbon.appendChild(el); panels.push(el);
-  }
-  // 격자 카드 (선택하면 상세로)
-  var cards=DATA.map(function(d,i){
-    var a=document.createElement('a'); a.href=d.href; a.setAttribute('aria-label',label(d)+' — '+d.title+' 상세 보기');
-    a.style.cssText='left:-180px;top:-112px;width:360px;height:225px;padding:16px;background:'+d.bg+';color:'+d.fg+';';
-    a.innerHTML='<span class="tg" style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.1em"><span>'+label(d)+'</span><span>'+d.tag+'</span></span><span style="display:flex;gap:14px;align-items:flex-end"><span class="tt" style="flex:1 1 auto;font-size:30px;font-weight:900;line-height:1.05;letter-spacing:-.04em">'+d.title+'</span><span class="im" style="flex:0 0 110px;height:110px;background:'+d.block+';display:flex;align-items:center;justify-content:center;font-size:11px;text-align:center">[작업 이미지]</span></span><span class="sb" style="font-size:12px;opacity:.9">'+d.sub+'</span>';
-    a.addEventListener('click',function(e){
-      e.preventDefault(); zoom=i; render();
-      setTimeout(function(){ var t=document.querySelector(d.href); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); history.replaceState(null,'',d.href); setTimeout(function(){zoom=null;render();},700); },450);
-    });
-    cardsEl.appendChild(a); return a;
-  });
-
-  var p=0, zoom=null;
-  function render(){
-    var vw=window.innerWidth, vh=window.innerHeight, mobile=vw<760;
-    var s=Math.max(0.36,Math.min(1,vw/1320, vh/860));
-    center.style.transform='scale('+s.toFixed(3)+')';
-    // 글자
-    var cross=smooth(clamp((p-0.2)/0.32)), out=smooth(clamp((p-0.52)/0.14));
-    var shift=(mobile?260:430)*cross;
-    if(mobile){ line1.style.left='-380px'; line1.style.width='760px'; line1.style.textAlign='center'; line2.style.left='-380px'; line2.style.width='760px'; line2.style.textAlign='center'; line2.style.top='-20px'; line1.style.top='-150px'; sub.style.top='120px'; sub.style.fontSize=(11/s).toFixed(1)+'px'; sub.style.width='760px'; sub.style.left='-380px'; if(intro.classList.contains('has3d')){ line1.style.top=(-176/s).toFixed(1)+'px'; line2.style.top=(-56).toFixed(1)+'px'; sub.style.top=(124/s).toFixed(1)+'px'; } }
-    else { line1.style.top='-150px'; line1.style.left='auto'; line1.style.right='0'; line1.style.width='auto'; line1.style.textAlign='right'; line2.style.left='0'; line2.style.width='auto'; line2.style.textAlign='left'; line2.style.top='24px'; sub.style.top='-36px'; sub.style.fontSize=Math.max(10,11/s).toFixed(1)+'px'; sub.style.width='320px'; sub.style.left='-160px'; }
-    line1.style.transform='translateX('+shift.toFixed(1)+'px)'; line2.style.transform='translateX('+(-shift).toFixed(1)+'px)';
-    var op=(zoom!==null?0:1-out).toFixed(3); line1.style.opacity=op; line2.style.opacity=op; sub.style.opacity=op;
-    // 리본
-    var r=clamp((p-0.03)/0.55);
-    ribbon.style.transform='rotateZ(-10deg) rotateX(12deg)';
-    ribbon.style.opacity=(r<=0||r>=1)?0:1;
-    var head=lerp(-0.05,1+N*du+0.05,r);
-    for(var i=0;i<N;i++){
-      var u=head-i*du, phi=lerp(PHI0,PHI1,u), rad=phi*Math.PI/180;
-      var x=RAD*Math.sin(rad), z=RAD*Math.cos(rad)-260, y=lerp(380,-440,u)+Math.sin(u*Math.PI*2)*40, tw=Math.sin(u*Math.PI)*-6;
-      panels[i].style.opacity=(u<-0.12||u>1.12)?0:1;
-      panels[i].style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+phi.toFixed(2)+'deg) rotateZ('+tw.toFixed(2)+'deg)';
-    }
-    // 격자
-    var g=clamp((p-0.5)/0.44), cols=mobile?2:3;
-    cardsEl.className=mobile?'compact':'';
-    var cw,chh,gap,inv;
-    if(mobile){ gap=12; cw=Math.floor((vw-40-gap)/2); chh=Math.round(cw*0.66); inv=1/s; }
-    else { gap=24; cw=360; chh=225; inv=1; }
-    cards.forEach(function(a,i){
-      var col=i%cols, row=Math.floor(i/cols), rows=Math.ceil(cards.length/cols);
-      var gx=(col-(cols-1)/2)*(cw+gap)*inv, gy=((row-(rows-1)/2)*(chh+gap)+10)*inv;
-      a.style.width=cw+'px'; a.style.height=chh+'px'; a.style.left=(-cw/2)+'px'; a.style.top=(-chh/2)+'px'; a.style.padding=(mobile?'12px':'16px');
-      var k=smooth(clamp((g-i*0.085)/0.5));
-      var x=lerp(gx+980-col*120,gx,k), y=lerp(gy+420+row*80,gy,k), z=lerp(-420,0,k);
-      var tf='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px) rotateY('+lerp(-38,0,k).toFixed(2)+'deg) rotateZ('+lerp(9,0,k).toFixed(2)+'deg) scale('+inv.toFixed(3)+')';
-      var o=clamp(k*2.5);
-      if(zoom!==null){ if(zoom===i){tf='translate3d(0px,0px,'+(mobile?120:420)+'px) scale('+(1.3*inv).toFixed(3)+')';o=1;} else o=0; }
-      a.style.transform=tf; a.style.opacity=o.toFixed(3);
-      a.style.transition=zoom!==null?'transform .5s cubic-bezier(.2,.7,.2,1), opacity .35s ease':'box-shadow .2s ease';
-      a.style.pointerEvents=k>0.9?'auto':'none'; a.tabIndex=k>0.9?0:-1;
-    });
-    hint.textContent=p<0.96?'SCROLL ↓':'작업물을 눌러 상세 보기 →';
-  }
   // 메뉴 현재 위치 + 맨 위로 버튼
   var navLinks=[].slice.call(document.querySelectorAll('#siteHeader .nav-link')), toTop=$('toTop'), header=$('siteHeader');
   function onScroll(){
-    var rc=intro.getBoundingClientRect(), total=rc.height-window.innerHeight;
-    p=total>0?clamp(-rc.top/total):0; render();
-    var hh=header.offsetHeight; document.documentElement.style.setProperty('--hh',(hh+8)+'px');
+    var rc=intro.getBoundingClientRect();
+    var hh=header.offsetHeight; header.classList.toggle('on-hero', rc.bottom>hh); document.documentElement.style.setProperty('--hh',(hh+8)+'px');
     var cur='';
     ['about','work','graphic','contact'].forEach(function(id){ var n=$(id); if(n && n.getBoundingClientRect().top<hh+60) cur=id; });
     if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) cur='contact';
@@ -996,13 +911,13 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 /* 인트로 3D 글자 "PORTFOLIO"
    - Inter 글꼴로 글자를 캔버스에 그린 뒤, 안쪽으로 갈수록 높아지는 높이 지도로 판을 부풀려 풍선 같은 입체 글자를 만든다
    - 글자마다 제자리로 돌아가는 스프링 + 둥둥 뜨는 움직임, 커서가 닿거나 누르면 튕겨 나가고 서로 부딪힌다
-   - 위치·크기·투명도는 평면 #line2를 따라간다 (스크롤 연출은 기존 인트로 스크립트가 그대로 담당)
+   - 위치는 평면 #heroWord(3D가 안 될 때 보이는 검은 글자)의 가운데를 따라간다
    - 움직임 줄이기 설정, WebGL 미지원, 불러오기 실패 시에는 평면 글자 그대로 둔다 */
-const intro = document.getElementById('top'), canvas = document.getElementById('hero3d'), line2 = document.getElementById('line2');
+const intro = document.getElementById('top'), canvas = document.getElementById('hero3d'), word2d = document.getElementById('heroWord');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const webglOK = () => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } };
-if (intro && canvas && line2 && !reduceMotion && webglOK()) {
-  start().catch(err => { console.warn('3D 인트로를 건너뜀:', err); intro.classList.remove('has3d'); canvas.style.opacity = '0'; window.dispatchEvent(new Event('scroll')); });
+if (intro && canvas && word2d && !reduceMotion && webglOK()) {
+  start().catch(err => { console.warn('3D 인트로를 건너뜀:', err); intro.classList.remove('has3d'); });
 }
 
 async function start() {
@@ -1120,7 +1035,7 @@ async function start() {
     });
   }
 
-  /* ---------- 크기·위치: 평면 #line2를 따라간다 ---------- */
+  /* ---------- 크기·위치: 평면 #heroWord 가운데를 따라간다 ---------- */
   const view = { W: 1, H: 1, top: 0, left: 0, wpp: 1, kpx: 100, ax: 0, ay: 0 };
   function resize() {
     const r = canvas.getBoundingClientRect();
@@ -1131,10 +1046,10 @@ async function start() {
     layout();
   }
   function follow() {
-    const cr = canvas.getBoundingClientRect(), lr = line2.getBoundingClientRect();
+    const cr = canvas.getBoundingClientRect(), lr = word2d.getBoundingClientRect();
     view.top = cr.top; view.left = cr.left;
-    const targetW = isMobile() ? Math.min(view.W * 0.74, 400) : lr.width * 1.12;
-    view.kpx = targetW / wordW;                                          // 1 단위(대문자 높이)당 픽셀
+    // 1 단위(대문자 높이)당 픽셀: 화면 폭에 맞추되 높이도 넘지 않게
+    view.kpx = isMobile() ? Math.min(view.W * 0.84 / wordW, view.H * 0.13) : Math.min(view.W * 0.86 / wordW, view.H * 0.24);
     view.ax = lr.left + lr.width / 2 - cr.left; view.ay = lr.top + lr.height / 2 - cr.top;
     word.scale.setScalar(view.kpx * view.wpp);
     word.position.set((view.ax - view.W / 2) * view.wpp, -(view.ay - view.H / 2) * view.wpp, 0);
@@ -1203,8 +1118,6 @@ async function start() {
 
   /* ---------- 시작 ---------- */
   intro.classList.add('has3d');
-  line2.classList.remove('pf-in-r');
-  window.dispatchEvent(new Event('scroll'));                            // 모바일 줄 간격 다시 계산
   resize(); follow();
   letters.forEach((l, i) => { l.p.set(l.hx, (view.ay + 40) / view.kpx + 1.5 + i * 0.15, 0); l.r.set(0, 0, (i % 2 ? 1 : -1) * 0.3); });
   addEventListener('resize', () => { rowsKey = ''; resize(); }, { passive: true });
@@ -1212,14 +1125,12 @@ async function start() {
   let last = performance.now(), t = 0;
   renderer.setAnimationLoop(() => {
     const now = performance.now(), elapsed = Math.min(0.1, (now - last) / 1000); last = now;
-    const op = parseFloat(line2.style.opacity || '1');
     const ir = intro.getBoundingClientRect();
-    if (ir.bottom <= 0 || op <= 0.001) { canvas.style.opacity = '0'; last = now; return; } // 안 보일 때(스크롤로 지나감, 케이스 스터디 페이지)는 계산·그리기를 쉰다
+    if (ir.bottom <= 0) { last = now; return; } // 안 보일 때(스크롤로 지나감, 케이스 스터디 페이지)는 계산·그리기를 쉰다
     follow();
     const n = Math.max(1, Math.ceil(elapsed * 60)), dt = elapsed / n;   // 프레임이 느려도 1/60초 단위로 나눠 계산
     for (let k = 0; k < n; k++) { t += dt; step(dt, t); }
     renderer.render(scene, camera);
-    canvas.style.opacity = op.toFixed(3);
   });
 }
 </script></body></html>
