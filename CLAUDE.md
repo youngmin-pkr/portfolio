@@ -9,7 +9,7 @@ UI/UX 웹디자이너 취업용 포트폴리오. GitHub Pages로 공개하고 �
 
 ## 페이지 구성 (index.html 안)
 
-- `#mainPage` — 메인. 순서: 인트로(`#top`) → `#about` → `#work`(`#work-01`, `#work-02`) → `#graphic` → `#contact`
+- `#mainPage` — 메인. 순서: 인트로(`#top`) → `#showcase` → `#about` → `#work`(`#work-01`, `#work-02`) → `#graphic` → `#contact`
 - `#case-dongheng` — 케이스 스터디 01: 행사 동행 매칭 플랫폼
 - `#case-moodi` — 케이스 스터디 02: MOODI 감정 기록 앱
 - 페이지 전환은 주소의 해시로 한다 (`#case-dongheng`, `#case-moodi`, 그 밖의 해시는 메인). 아래쪽 `<script>`의 router 참고
@@ -27,11 +27,13 @@ UI/UX 웹디자이너 취업용 포트폴리오. GitHub Pages로 공개하고 �
 - 인트로 위에서는 상단 메뉴 배경이 투명(`#siteHeader.on-hero`)
 - 그래픽 작업 데이터는 메인 스크립트의 `G` 배열
 
-## 케이스 스터디 첫 화면 (기기 확대)
+## 인트로 다음 화면 (기기 확대, `#showcase`)
 
-- 각 케이스 스터디 메뉴 바로 아래 `section.devzoom` (`#dongheng-intro` 모니터, `#moodi-intro` 휴대폰). 기기는 CSS로 그린다
-- 스크롤하면 기기 화면 안으로 확대해 들어가 브라우저를 채운 뒤 원래 제목·내용이 이어진다. 비율이 많이 다르면(PC의 휴대폰, 모바일의 모니터) 화면이 잘리지 않게만 키운다
-- 기기 화면 속은 지금 목업. 실제 화면 이미지가 생기면 `.dz-scr` 안을 `<img>`(alt 필수)로 바꾼다
+- 메인 순서: 인트로(`#top`) → `#showcase` → `#about` …. 배경은 인트로와 같은 #D6D6C9
+- PC는 모니터, 모바일(760px 미만)은 휴대폰. 같은 마크업(`.dz-adapt`)을 CSS로 바꾼다. 기기는 CSS로 그린다
+- 스크롤하면 기기 화면 안으로 확대해 들어가 브라우저를 채운 뒤 About이 이어진다
+- 기기 화면 속은 작은 포트폴리오 "SELECTED WORK" + 카드 3장(동행 → `#case-dongheng`, MOODI → `#case-moodi`, 그래픽 → `#graphic`)
+- 이 구간에서는 상단 메뉴 배경이 베이지(`#siteHeader.on-show`)
 - 스크립트는 router 스크립트 바로 아래 `.devzoom` 스크립트. 움직임 줄이기 설정이면 확대 없이 기기만 보인다
 
 ## 디자인 규칙
