@@ -9,7 +9,7 @@ UI/UX 웹디자이너 취업용 포트폴리오. GitHub Pages로 공개하고 �
 
 ## 페이지 구성 (index.html 안)
 
-- `#mainPage` — 메인. 순서: 인트로(`#top`) → `#about` → `#work`(`#work-01`, `#work-02`) → `#graphic` → `#contact`
+- `#mainPage` — 메인. 순서: 인트로(`#top`) → `#showcase` → `#about` → `#work`(`#work-01`, `#work-02`) → `#graphic` → `#contact`
 - `#case-dongheng` — 케이스 스터디 01: 행사 동행 매칭 플랫폼
 - `#case-moodi` — 케이스 스터디 02: MOODI 감정 기록 앱
 - 페이지 전환은 주소의 해시로 한다 (`#case-dongheng`, `#case-moodi`, 그 밖의 해시는 메인). 아래쪽 `<script>`의 router 참고
@@ -18,14 +18,27 @@ UI/UX 웹디자이너 취업용 포트폴리오. GitHub Pages로 공개하고 �
 
 ## 인트로 동작
 
-- 첫 화면: "UI/UX DESIGN / PORTFOLIO" 두 줄
-- 스크롤: 작업 카드 22장이 이어진 띠가 왼쪽 아래 → 글자 앞 → 오른쪽 위로 흘러감, 두 줄 글자는 서로 반대로 엇갈림
-- 스크롤 끝: 작업 카드 6장이 격자로 정렬 (PC 3×2, 모바일 2×3), 카드를 누르면 해당 상세로 이동
-- 카드 데이터는 인트로 스크립트의 `DATA` 배열, 그래픽 작업은 `G` 배열
+- 한 화면(100svh) 인트로. 배경 #D6D6C9, 뒤에 큰 이름 "YOUNGMIN"(#B9BAA3, `#heroName`), 앞에 검은 3D "PORTFOLIO"
+- 3D 글자는 `index.html` 맨 아래 `<script type="module">` (three.js 0.170.0, jsdelivr). Inter 900 글자를 높이 지도로 부풀려 만든다. 3D 모델 파일 없음
+- 동작: 위에서 떨어져 자리 잡음 → 커서·탭에 튕기고 서로 부딪힘 → 마우스 위치에 따라 살짝 기울어짐
+- 3D 위치는 평면 글자 `#heroWord`의 가운데를 따라간다. 3D가 안 되면(움직임 줄이기, WebGL 없음, 불러오기 실패) `#heroWord` 검은 평면 글자가 그대로 보인다
+- PC는 한 줄, 모바일(760px 미만)은 YOUNG / MIN, PORT / FOLIO 두 줄
+- 실제 제목은 화면 읽기용 `h1#heroTitle`(.sr-only). 이름·3D 글자는 aria-hidden 장식
+- 인트로 위에서는 상단 메뉴 배경이 투명(`#siteHeader.on-hero`)
+- 그래픽 작업 데이터는 메인 스크립트의 `G` 배열
+
+## 인트로 다음 화면 (기기 확대, `#showcase`)
+
+- 메인 순서: 인트로(`#top`) → `#showcase` → `#about` …. 배경은 인트로와 같은 #D6D6C9
+- PC는 모니터, 모바일(760px 미만)은 휴대폰. 같은 마크업(`.dz-adapt`)을 CSS로 바꾼다. 기기는 CSS로 그린다
+- 스크롤하면 기기 화면 안으로 확대해 들어가 브라우저를 채운 뒤 About이 이어진다
+- 기기 화면 속은 작은 포트폴리오 "SELECTED WORK" + 카드 3장(동행 → `#case-dongheng`, MOODI → `#case-moodi`, 그래픽 → `#graphic`)
+- 이 구간에서는 상단 메뉴 배경이 베이지(`#siteHeader.on-show`)
+- 스크립트는 router 스크립트 바로 아래 `.devzoom` 스크립트. 움직임 줄이기 설정이면 확대 없이 기기만 보인다
 
 ## 디자인 규칙
 
-- 컬러: 텍스트 #111111, 배경 #EBEBEB / #C9C9C9, 포인트 #2B50D6 (MOODI 페이지 포인트는 #7960C9)
+- 컬러: 텍스트 #111111, 배경 #EBEBEB / #C9C9C9, 포인트 #2B50D6 (MOODI 페이지 포인트는 #7960C9), 인트로 배경 #D6D6C9 / 이름 #B9BAA3
 - 글꼴: Inter(영문 제목), Noto Sans KR(한글). 이 두 가지만 쓴다
 - 버튼: 둥근 알약형, 검정 배경 + 흰 글자, 높이 44px 이상. hover 시 파랑(#2B50D6)
 - 카드: 흰 배경, 각진 모서리, 안쪽 여백 20~24px
