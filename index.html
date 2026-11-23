@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>박영민 — UI/UX 포트폴리오</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap"><style>body{background:#C9C9C9}
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>박영민 — UI/UX 포트폴리오</title><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script><link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js" crossorigin><link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/environments/RoomEnvironment.js" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap"><style>body{background:#C9C9C9}
 html{scroll-behavior:smooth}
 body{margin:0}
 a{color:#111111}
@@ -1019,7 +1019,6 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   all();
 })();
 </script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 <script type="module">
 /* 인트로 3D 글자 "PORTFOLIO"
    - Inter 글꼴로 글자를 캔버스에 그린 뒤, 안쪽으로 갈수록 높아지는 높이 지도로 판을 부풀려 풍선 같은 입체 글자를 만든다
@@ -1045,7 +1044,7 @@ async function start() {
   const lowSpec = isMobile() || (navigator.hardwareConcurrency || 8) <= 4;
 
   /* ---------- 글자 모양 만들기 ---------- */
-  const PX = 220, FONT = `900 ${PX}px Inter, sans-serif`, PAD = Math.round(PX * 0.12), PUFF = 0.3;
+  const PX = lowSpec ? 150 : 220, FONT = `900 ${PX}px Inter, sans-serif`, PAD = Math.round(PX * 0.12), PUFF = 0.3;
   const meas = document.createElement('canvas').getContext('2d');
   meas.font = FONT;
   const capH = meas.measureText('H').actualBoundingBoxAscent;          // 1 단위 = 대문자 높이
@@ -1076,7 +1075,7 @@ async function start() {
     // 베개처럼 둥근 단면
     let H = new Float32Array(n);
     for (let i = 0; i < n; i++) { const t = Math.min(1, D[i] / dmax); H[i] = D[i] ? Math.sqrt(1 - (1 - t) * (1 - t)) : 0; }
-    for (let pass = 0; pass < 2; pass++) H = blur(H, w, h, 3);
+    for (let pass = 0; pass < 2; pass++) H = blur(H, w, h, lowSpec ? 2 : 3);
     return { c, w, h, H, L, R, adv: m.width };
   }
   function blur(src, w, h, r) {
@@ -1086,8 +1085,8 @@ async function start() {
     return out;
   }
   function letterMesh(g) {
-    const PW = g.w / capH, PH = g.h / capH, step = lowSpec ? 4 : 2.5;
-    const sx = Math.max(24, Math.round(g.w / step)), sy = Math.max(24, Math.round(g.h / step));
+    const PW = g.w / capH, PH = g.h / capH, step = lowSpec ? 3.6 : 2.5;   // 모바일 해상도(150)에서 약 40×40칸
+    const sx = Math.max(20, Math.round(g.w / step)), sy = Math.max(20, Math.round(g.h / step));
     const front = new THREE.PlaneGeometry(PW, PH, sx, sy);
     const pos = front.attributes.position, uv = front.attributes.uv;
     for (let i = 0; i < pos.count; i++) {
@@ -1110,7 +1109,7 @@ async function start() {
 
   /* ---------- 장면 ---------- */
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, lowSpec ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, lowSpec ? 1.25 : 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene();
@@ -1127,7 +1126,7 @@ async function start() {
     word.add(mesh);
     return { ch, g, mesh, hx: 0, hy: 0, hw: (g.L + g.R) / 2 / capH, hh: 0.54,
       p: new THREE.Vector3(0, 6, 0), v: new THREE.Vector3(), r: new THREE.Vector3(), w: new THREE.Vector3(),
-      seed: i * 2.17 + 0.6, wake: 0.15 + i * 0.07, active: false, inside: false };
+      seed: i * 2.17 + 0.6, wake: lowSpec ? 0.05 + i * 0.04 : 0.15 + i * 0.07, active: false, inside: false };
   });
 
   /* ---------- 배치 (PC 한 줄, 모바일 PORT / FOLIO 두 줄) ---------- */
@@ -1232,7 +1231,7 @@ async function start() {
   /* ---------- 시작 ---------- */
   intro.classList.add('has3d');
   resize(); follow();
-  letters.forEach((l, i) => { l.p.set(l.hx, (view.ay + 40) / view.kpx + 1.5 + i * 0.15, 0); l.r.set(0, 0, (i % 2 ? 1 : -1) * 0.3); });
+  letters.forEach((l, i) => { l.p.set(l.hx, lowSpec ? l.hy + 2.2 + i * 0.08 : (view.ay + 40) / view.kpx + 1.5 + i * 0.15, 0); l.r.set(0, 0, (i % 2 ? 1 : -1) * 0.3); });
   addEventListener('resize', () => { rowsKey = ''; resize(); }, { passive: true });
 
   let last = performance.now(), t = 0;
