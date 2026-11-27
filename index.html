@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>박영민 — UI/UX 포트폴리오</title><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script><link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js" crossorigin><link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/environments/RoomEnvironment.js" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap"><style>body{background:#C9C9C9}
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>박영민 — UI/UX 포트폴리오</title><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap"><style>body{background:#C9C9C9}
 html{scroll-behavior:smooth}
 body{margin:0}
 a{color:#111111}
@@ -25,24 +25,23 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 #toTop:hover{background:#111111 !important;color:#FFFFFF !important}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
 .sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-/* 인트로: 배경 #D6D6C9, 뒤에 PORTFOLIO(#B9BAA3), 앞에 검은 3D YOUNGMIN */
-#top{position:relative;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:#D6D6C9}
-#heroName,#heroWord{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;white-space:nowrap;font-weight:900;line-height:.86;pointer-events:none}
-#heroName{font-size:min(15.4vw,30vh);letter-spacing:-0.04em;color:#B9BAA3}
-#heroWord{font-size:min(17.2vw,34vh);letter-spacing:-0.02em;color:#111111}
-#heroName span,#heroWord span{display:inline}
-#hero3d{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .4s ease;pointer-events:none}
-#top.has3d #hero3d{opacity:1}
-#top.has3d #heroWord{color:transparent}
-#hint{position:absolute;left:32px;bottom:24px;display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:12px;font-weight:700;letter-spacing:.14em;color:#111111;text-decoration:none}
+/* 인트로: 검정 판에 내 이름이 뚫려 있고, 스크롤하면 글자 속으로 확대해 들어간다 */
+#top{position:relative;height:320vh;background:#D6D6C9}
+#top .hero-stick{position:sticky;top:0;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:#D6D6C9}
+#logoSvg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#logoSvg text{font-family:'Inter',system-ui,sans-serif;font-weight:900;letter-spacing:-0.02em}
+#hint{position:absolute;left:32px;bottom:24px;display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:12px;font-weight:700;letter-spacing:.14em;color:#FFFFFF;text-decoration:none;transition:opacity .3s ease}
 #siteHeader.on-hero{background:transparent !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important}
+#siteHeader.on-dark a{color:#FFFFFF !important}
+#siteHeader.on-dark a[href="#contact"]{background:#FFFFFF !important;color:#111111 !important}
 #siteHeader.on-show{background:rgba(214,214,201,0.9) !important}
 @media (max-width: 760px){
-  #heroName,#heroWord{line-height:.9}
-  #heroName span,#heroWord span{display:block}
-  #heroName{font-size:min(29vw,18vh)}
-  #heroWord{font-size:min(25.4vw,20vh)}
   #hint{left:20px;bottom:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  #top{height:auto}
+  #top .hero-stick{position:relative}
+  #hint{display:none}
 }
 @media (max-width: 760px){
   #siteHeader{padding:6px 10px !important;flex-wrap:nowrap !important}
@@ -127,10 +126,16 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
 <button id="toTop" type="button" aria-label="맨 위로 가기" style="position: fixed; right: 20px; bottom: 20px; z-index: 90; width: 52px; height: 52px; border-radius: 50%; border: 1px solid #111111; background: #FFFFFF; color: #111111; font-size: 20px; font-weight: 700; cursor: pointer; opacity: 0; pointer-events: none;">↑</button>
 <section id="top" aria-labelledby="heroTitle">
   <h1 id="heroTitle" class="sr-only">박영민(YOUNGMIN) UI/UX 디자인 포트폴리오</h1>
-  <p id="heroName" aria-hidden="true"><span>PORT</span><span>FOLIO</span></p>
-  <canvas id="hero3d" aria-hidden="true"></canvas>
-  <p id="heroWord" aria-hidden="true"><span>YOUNG</span><span>MIN</span></p>
-  <a id="hint" href="#about">SCROLL DOWN <span aria-hidden="true">↓</span></a>
+  <div class="hero-stick">
+    <svg id="logoSvg" aria-hidden="true" focusable="false">
+      <defs><mask id="logoMask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+        <rect width="100%" height="100%" fill="#FFFFFF"/>
+        <g id="logoG"><text id="logoText" fill="#000000" text-anchor="middle"></text></g>
+      </mask></defs>
+      <rect id="logoPlate" width="100%" height="100%" fill="#111111" mask="url(#logoMask)"/>
+    </svg>
+    <a id="hint" href="#showcase">SCROLL DOWN <span aria-hidden="true">↓</span></a>
+  </div>
 </section>
 <section id="showcase" class="devzoom" aria-label="작업 미리보기">
   <div class="dz-stick">
@@ -1019,230 +1024,56 @@ section[id],footer[id]{scroll-margin-top:var(--hh,76px) !important}
   all();
 })();
 </script>
-<script type="module">
-/* 인트로 3D 글자 "YOUNGMIN"
-   - Inter 글꼴로 글자를 캔버스에 그린 뒤, 안쪽으로 갈수록 높아지는 높이 지도로 판을 부풀려 풍선 같은 입체 글자를 만든다
-   - 글자마다 제자리로 돌아가는 스프링 + 둥둥 뜨는 움직임, 커서가 닿거나 누르면 튕겨 나가고 서로 부딪힌다
-   - 위치는 평면 #heroWord(3D가 안 될 때 보이는 검은 글자)의 가운데를 따라간다
-   - 움직임 줄이기 설정, WebGL 미지원, 불러오기 실패 시에는 평면 글자 그대로 둔다 */
-const intro = document.getElementById('top'), canvas = document.getElementById('hero3d'), word2d = document.getElementById('heroWord');
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const webglOK = () => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } };
-if (intro && canvas && word2d && !reduceMotion && webglOK()) {
-  start().catch(err => { console.warn('3D 인트로를 건너뜀:', err); intro.classList.remove('has3d'); });
-}
-
-async function start() {
-  const [THREE, { RoomEnvironment }] = await Promise.all([
-    import('three'),
-    import('three/addons/environments/RoomEnvironment.js'),
-    document.fonts.load('900 200px Inter')
-  ]);
-
-  const WORD = 'YOUNGMIN', COLOR = 0x111111;
-  const isMobile = () => innerWidth < 760;
-  const lowSpec = isMobile() || (navigator.hardwareConcurrency || 8) <= 4;
-
-  /* ---------- 글자 모양 만들기 ---------- */
-  const PX = lowSpec ? 150 : 220, FONT = `900 ${PX}px Inter, sans-serif`, PAD = Math.round(PX * 0.12), PUFF = 0.3;
-  const meas = document.createElement('canvas').getContext('2d');
-  meas.font = FONT;
-  const capH = meas.measureText('H').actualBoundingBoxAscent;          // 1 단위 = 대문자 높이
-  const TRACK = 0.01 * PX;                                             // 자간
-
-  function glyph(ch) {
-    meas.font = FONT;
-    const m = meas.measureText(ch), L = m.actualBoundingBoxLeft, R = m.actualBoundingBoxRight;
-    const w = Math.ceil(L + R) + PAD * 2, h = Math.ceil(capH) + PAD * 2, n = w * h;
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d');
-    x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
-    x.fillStyle = '#fff'; x.font = FONT; x.textBaseline = 'alphabetic';
-    x.fillText(ch, PAD + L, PAD + capH);
-    const px = x.getImageData(0, 0, w, h).data;
-    // 글자 안쪽에서 가장자리까지의 거리 (2번 훑는 근사 거리 변환)
-    const D = new Float32Array(n), BIG = 1e6, S2 = Math.SQRT2;
-    for (let i = 0; i < n; i++) D[i] = px[i * 4 + 1] > 127 ? BIG : 0;
-    for (let y = 1; y < h - 1; y++) for (let k = 1; k < w - 1; k++) {
-      const i = y * w + k; if (!D[i]) continue;
-      D[i] = Math.min(D[i], D[i - 1] + 1, D[i - w] + 1, D[i - w - 1] + S2, D[i - w + 1] + S2);
-    }
-    for (let y = h - 2; y > 0; y--) for (let k = w - 2; k > 0; k--) {
-      const i = y * w + k; if (!D[i]) continue;
-      D[i] = Math.min(D[i], D[i + 1] + 1, D[i + w] + 1, D[i + w + 1] + S2, D[i + w - 1] + S2);
-    }
-    let dmax = 1; for (let i = 0; i < n; i++) if (D[i] < BIG && D[i] > dmax) dmax = D[i];
-    // 베개처럼 둥근 단면
-    let H = new Float32Array(n);
-    for (let i = 0; i < n; i++) { const t = Math.min(1, D[i] / dmax); H[i] = D[i] ? Math.sqrt(1 - (1 - t) * (1 - t)) : 0; }
-    for (let pass = 0; pass < 2; pass++) H = blur(H, w, h, lowSpec ? 2 : 3);
-    return { c, w, h, H, L, R, adv: m.width };
+<script>
+/* 인트로: 검정 판에 YOUNGMIN이 뚫려 있고, 스크롤하면 N 글자 속으로 확대해 들어간다 */
+(function(){
+  var intro=document.getElementById('top'), svg=document.getElementById('logoSvg'), txt=document.getElementById('logoText'), g=document.getElementById('logoG'), plate=document.getElementById('logoPlate'), hint=document.getElementById('hint'), header=document.getElementById('siteHeader');
+  if(!intro||!svg||!txt||!g) return;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ox=0, oy=0, SMAX=1, W=0, H=0, narrow=false, ticking=false;
+  function layout(){
+    W=svg.clientWidth; H=svg.clientHeight; narrow=window.innerWidth<760;
+    while(txt.firstChild) txt.removeChild(txt.firstChild);
+    var lines=narrow?['YOUNG','MIN']:['YOUNGMIN'];
+    var fs=narrow?Math.min(W*0.235,H*0.2):Math.min(W*0.17,H*0.34);
+    txt.setAttribute('font-size',fs);
+    var lh=fs*0.9, top=H/2-(lines.length-1)*lh/2+fs*0.36;
+    lines.forEach(function(t,i){ var ts=document.createElementNS('http://www.w3.org/2000/svg','tspan'); ts.setAttribute('x',W/2); ts.setAttribute('y',top+i*lh); ts.textContent=t; txt.appendChild(ts); });
+    // 확대 중심: 마지막 글자 N에서 획이 가장 두꺼운 지점 (그 안으로 파고들면 화면이 글자 구멍으로 가득 찬다)
+    var baseY=top+(lines.length-1)*lh, clr=fs*0.1;
+    ox=W/2; oy=H/2;
+    try{
+      var r=txt.getExtentOfChar(txt.getNumberOfChars()-1), C=200, cv=document.createElement('canvas'); cv.width=C*1.2; cv.height=C*1.2;
+      var cx=cv.getContext('2d'); cx.font='900 '+C+'px Inter, sans-serif'; cx.textBaseline='alphabetic'; cx.fillStyle='#000'; cx.fillText('N',0,C);
+      var d=cx.getImageData(0,0,cv.width,cv.height).data, cw=cv.width, ch=cv.height;
+      var on=function(x,y){ return x>=0&&y>=0&&x<cw&&y<ch&&d[(y*cw+x)*4+3]>127; };
+      var best=0,bx=0,by=0;
+      for(var y=0;y<ch;y+=3) for(var x=0;x<cw;x+=3){
+        if(!on(x,y)) continue;
+        var m=1e9;
+        for(var a=0;a<16&&m>best;a++){ var dx=Math.cos(a*Math.PI/8), dy=Math.sin(a*Math.PI/8), t=1; while(t<m&&on(Math.round(x+dx*t),Math.round(y+dy*t))) t++; if(t<m) m=t; }
+        if(m>best){ best=m; bx=x; by=y; }
+      }
+      if(best>0){ var k=fs/C; ox=r.x+bx*k; oy=baseY+(by-C)*k; clr=best*k; }
+    }catch(e){}
+    SMAX=Math.hypot(W,H)/2/clr*1.15;
+    update();
   }
-  function blur(src, w, h, r) {
-    const tmp = new Float32Array(src.length), out = new Float32Array(src.length), sz = r * 2 + 1;
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0; for (let k = -r; k <= r; k++) s += src[y * w + Math.min(w - 1, Math.max(0, x + k))]; tmp[y * w + x] = s / sz; }
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0; for (let k = -r; k <= r; k++) s += tmp[Math.min(h - 1, Math.max(0, y + k)) * w + x]; out[y * w + x] = s / sz; }
-    return out;
+  function update(){
+    ticking=false;
+    var total=intro.offsetHeight-svg.parentNode.offsetHeight, y=-intro.getBoundingClientRect().top;
+    var p=reduce||total<=0?0:Math.min(1,Math.max(0,y/total));
+    var k=Math.min(1,p/0.9);                 // 0~0.9 구간에서 확대, 마지막 10%는 판을 걷어낸다
+    var s=Math.pow(SMAX,Math.pow(k,1.15));
+    g.setAttribute('transform','translate('+ox+' '+oy+') scale('+s+') translate('+(-ox)+' '+(-oy)+')');
+    plate.style.opacity=p>0.9?String(Math.max(0,1-(p-0.9)/0.1)):'1';
+    if(hint) hint.style.opacity=p>0.05?'0':'1';
+    header.classList.toggle('on-dark', p<0.35);
   }
-  function letterMesh(g) {
-    const PW = g.w / capH, PH = g.h / capH, step = lowSpec ? 3.6 : 2.5;   // 모바일 해상도(150)에서 약 40×40칸
-    const sx = Math.max(20, Math.round(g.w / step)), sy = Math.max(20, Math.round(g.h / step));
-    const front = new THREE.PlaneGeometry(PW, PH, sx, sy);
-    const pos = front.attributes.position, uv = front.attributes.uv;
-    for (let i = 0; i < pos.count; i++) {
-      const fx = uv.getX(i) * (g.w - 1), fy = (1 - uv.getY(i)) * (g.h - 1);
-      const x0 = Math.floor(fx), y0 = Math.floor(fy), x1 = Math.min(g.w - 1, x0 + 1), y1 = Math.min(g.h - 1, y0 + 1), tx = fx - x0, ty = fy - y0;
-      const a = g.H[y0 * g.w + x0] * (1 - tx) + g.H[y0 * g.w + x1] * tx, b = g.H[y1 * g.w + x0] * (1 - tx) + g.H[y1 * g.w + x1] * tx;
-      pos.setZ(i, (a * (1 - ty) + b * ty) * PUFF);
-    }
-    front.computeVertexNormals();
-    const back = front.clone(), bp = back.attributes.position, idx = back.index.array;
-    for (let i = 0; i < bp.count; i++) bp.setZ(i, -bp.getZ(i));
-    for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
-    back.computeVertexNormals();
-    const tex = new THREE.CanvasTexture(g.c);
-    const mat = new THREE.MeshPhysicalMaterial({ color: COLOR, roughness: 0.3, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.05, alphaMap: tex, alphaTest: 0.5, side: THREE.DoubleSide });
-    const grp = new THREE.Group();
-    grp.add(new THREE.Mesh(front, mat), new THREE.Mesh(back, mat));
-    return grp;
-  }
-
-  /* ---------- 장면 ---------- */
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, lowSpec ? 1.25 : 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  pmrem.dispose();
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
-  camera.position.set(0, 0, 10);
-  const VIS_H = 2 * 10 * Math.tan(THREE.MathUtils.degToRad(15));    // z=0 평면에서 보이는 높이
-  const word = new THREE.Group(); scene.add(word);
-
-  const letters = [...WORD].map((ch, i) => {
-    const g = glyph(ch), mesh = letterMesh(g);
-    word.add(mesh);
-    return { ch, g, mesh, hx: 0, hy: 0, hw: (g.L + g.R) / 2 / capH, hh: 0.54,
-      p: new THREE.Vector3(0, 6, 0), v: new THREE.Vector3(), r: new THREE.Vector3(), w: new THREE.Vector3(),
-      seed: i * 2.17 + 0.6, wake: lowSpec ? 0.05 + i * 0.04 : 0.15 + i * 0.07, active: false, inside: false };
-  });
-
-  /* ---------- 배치 (PC 한 줄, 모바일 YOUNG / MIN 두 줄) ---------- */
-  let rowsKey = '', wordW = 1;
-  function layout() {
-    const rows = isMobile() ? ['YOUNG', 'MIN'] : [WORD];
-    const key = rows.join('/'); if (key === rowsKey) return; rowsKey = key;
-    let li = 0; wordW = 0;
-    rows.forEach((row, r) => {
-      const items = letters.slice(li, li + row.length); li += row.length;
-      let pen = 0; const cxs = [];
-      items.forEach((l, k) => { cxs.push(pen - l.g.L + (l.g.L + l.g.R) / 2); pen += l.g.adv + (k < items.length - 1 ? TRACK : 0); });
-      const left = -items[0].g.L, right = pen - items[items.length - 1].g.adv + items[items.length - 1].g.R;
-      const mid = (left + right) / 2;
-      wordW = Math.max(wordW, (right - left) / capH);
-      const y = rows.length === 1 ? 0 : (r === 0 ? 0.64 : -0.64);
-      items.forEach((l, k) => { l.hx = (cxs[k] - mid) / capH; l.hy = y + (k % 2 ? -0.035 : 0.035); });
-    });
-  }
-
-  /* ---------- 크기·위치: 평면 #heroWord 가운데를 따라간다 ---------- */
-  const view = { W: 1, H: 1, top: 0, left: 0, wpp: 1, kpx: 100, ax: 0, ay: 0 };
-  function resize() {
-    const r = canvas.getBoundingClientRect();
-    view.W = Math.max(1, r.width); view.H = Math.max(1, r.height);
-    renderer.setSize(view.W, view.H, false);
-    camera.aspect = view.W / view.H; camera.updateProjectionMatrix();
-    view.wpp = VIS_H / view.H;
-    layout();
-  }
-  function follow() {
-    const cr = canvas.getBoundingClientRect(), lr = word2d.getBoundingClientRect();
-    view.top = cr.top; view.left = cr.left;
-    // 1 단위(대문자 높이)당 픽셀: 화면 폭에 맞추되 높이도 넘지 않게
-    view.kpx = isMobile() ? Math.min(view.W * 0.84 / wordW, view.H * 0.13) : Math.min(view.W * 0.86 / wordW, view.H * 0.24);
-    view.ax = lr.left + lr.width / 2 - cr.left; view.ay = lr.top + lr.height / 2 - cr.top;
-    word.scale.setScalar(view.kpx * view.wpp);
-    word.position.set((view.ax - view.W / 2) * view.wpp, -(view.ay - view.H / 2) * view.wpp, 0);
-  }
-
-  /* ---------- 마우스·터치 ---------- */
-  const ptr = { x: 0, y: 0, on: false, nx: 0, ny: 0 }, tilt = { x: 0, y: 0 };
-  const toLocal = e => { ptr.x = (e.clientX - view.left - view.ax) / view.kpx; ptr.y = -(e.clientY - view.top - view.ay) / view.kpx; ptr.nx = (e.clientX - view.left) / view.W * 2 - 1; ptr.ny = (e.clientY - view.top) / view.H * 2 - 1; };
-  addEventListener('pointermove', e => { toLocal(e); ptr.on = e.pointerType === 'mouse'; }, { passive: true });
-  addEventListener('pointerdown', e => { if (!intro.contains(e.target) && e.target !== document.documentElement) return; toLocal(e); letters.forEach(l => { if (hit(l)) kick(l, 1.4); }); }, { passive: true });
-  document.addEventListener('pointerleave', () => { ptr.on = false; });
-  const hit = l => ((l.p.x - ptr.x) / l.hw) ** 2 + ((l.p.y - ptr.y) / l.hh) ** 2 < 1;
-  function kick(l, f) {
-    const dx = l.p.x - ptr.x, dy = l.p.y - ptr.y, len = Math.hypot(dx, dy) || 1, nx = dx / len, ny = dy / len;
-    l.v.x += nx * 4.2 * f; l.v.y += ny * 4.2 * f; l.v.z += 1.2 * f;
-    l.w.z += -nx * 3 * f; l.w.y += nx * 2.2 * f; l.w.x += -ny * 2 * f;
-  }
-
-  /* ---------- 움직임 ---------- */
-  const RMAX = { x: 0.5, y: 0.6, z: 0.4 };
-  function step(dt, t) {
-    const bx0 = -view.ax / view.kpx, bx1 = (view.W - view.ax) / view.kpx;
-    const by1 = (view.ay - 72) / view.kpx, by0 = -(view.H - view.ay - 56) / view.kpx;
-    letters.forEach(l => {
-      if (!l.active) { if (t > l.wake) { l.active = true; } else return; }
-      if (ptr.on) { const inside = hit(l); if (inside && !l.inside) kick(l, 1); l.inside = inside; }
-      const s = l.seed;
-      const fx = Math.sin(t * 0.83 + s) * 0.35 + Math.sin(t * 1.61 + s * 1.9) * 0.18;
-      const fy = Math.cos(t * 0.71 + s * 1.3) * 0.35 + Math.sin(t * 1.37 + s * 0.7) * 0.18;
-      l.v.x += ((l.hx - l.p.x) * 14 + fx) * dt;
-      l.v.y += ((l.hy - l.p.y) * 14 + fy) * dt;
-      l.v.z += (-l.p.z * 16) * dt;
-      l.v.multiplyScalar(Math.exp(-3.2 * dt));
-      l.p.addScaledVector(l.v, dt);
-      l.w.x += (-l.r.x * 12 + Math.sin(t * 1.1 + s) * 0.25) * dt;
-      l.w.y += (-l.r.y * 12 + Math.cos(t * 0.9 + s) * 0.3) * dt;
-      l.w.z += (-l.r.z * 12 + Math.sin(t * 0.7 + s * 2) * 0.15) * dt;
-      l.w.multiplyScalar(Math.exp(-3 * dt));
-      l.r.addScaledVector(l.w, dt);
-      for (const c of ['x', 'y', 'z']) if (Math.abs(l.r[c]) > RMAX[c]) { l.r[c] = Math.sign(l.r[c]) * RMAX[c]; l.w[c] *= -0.4; }
-      // 화면 밖으로 나가지 않게 (들어오는 중에는 위쪽 벽 없음)
-      const xm0 = bx0 + l.hw, xm1 = bx1 - l.hw;
-      if (l.p.x < xm0) { l.p.x = xm0; l.v.x *= -0.7; } else if (l.p.x > xm1) { l.p.x = xm1; l.v.x *= -0.7; }
-      if (l.p.y < by0 + l.hh) { l.p.y = by0 + l.hh; l.v.y *= -0.7; }
-      if (l.landed && l.p.y > by1 - l.hh) { l.p.y = by1 - l.hh; l.v.y *= -0.7; }
-      if (!l.landed && l.p.y < l.hy + 0.3) l.landed = true;
-    });
-    // 글자끼리 부딪힘
-    for (let i = 0; i < letters.length; i++) for (let j = i + 1; j < letters.length; j++) {
-      const A = letters[i], B = letters[j]; if (!A.landed || !B.landed) continue;   // 떨어지는 중에는 서로 통과
-      const dx = B.p.x - A.p.x, dy = B.p.y - A.p.y, q = Math.hypot(dx / (A.hw + B.hw), dy / (A.hh + B.hh));
-      if (q >= 0.94) continue;
-      const len = Math.hypot(dx, dy) || 1, nx = dx / len, ny = dy / len, push = (0.94 - q) * len * 0.5 + 0.001;
-      A.p.x -= nx * push; A.p.y -= ny * push; B.p.x += nx * push; B.p.y += ny * push;
-      const vn = (B.v.x - A.v.x) * nx + (B.v.y - A.v.y) * ny;
-      if (vn < 0) { const imp = -1.4 * vn / 2; A.v.x -= nx * imp; A.v.y -= ny * imp; B.v.x += nx * imp; B.v.y += ny * imp; A.w.z -= imp * 0.3; B.w.z += imp * 0.3; }
-    }
-    // 마우스 위치에 따라 전체가 살짝 기울어짐
-    tilt.x += ((ptr.on ? ptr.ny : 0) * 0.16 - tilt.x) * Math.min(1, dt * 4);
-    tilt.y += ((ptr.on ? ptr.nx : 0) * 0.22 - tilt.y) * Math.min(1, dt * 4);
-    letters.forEach(l => {
-      l.mesh.position.copy(l.p);
-      l.mesh.rotation.set(l.r.x + tilt.x, l.r.y + tilt.y, l.r.z);
-    });
-  }
-
-  /* ---------- 시작 ---------- */
-  intro.classList.add('has3d');
-  resize(); follow();
-  letters.forEach((l, i) => { l.p.set(l.hx, lowSpec ? l.hy + 2.2 + i * 0.08 : (view.ay + 40) / view.kpx + 1.5 + i * 0.15, 0); l.r.set(0, 0, (i % 2 ? 1 : -1) * 0.3); });
-  addEventListener('resize', () => { rowsKey = ''; resize(); }, { passive: true });
-
-  let last = performance.now(), t = 0;
-  renderer.setAnimationLoop(() => {
-    const now = performance.now(), elapsed = Math.min(0.1, (now - last) / 1000); last = now;
-    const ir = intro.getBoundingClientRect();
-    if (ir.bottom <= 0) { last = now; return; } // 안 보일 때(스크롤로 지나감, 케이스 스터디 페이지)는 계산·그리기를 쉰다
-    follow();
-    const n = Math.max(1, Math.ceil(elapsed * 60)), dt = elapsed / n;   // 프레임이 느려도 1/60초 단위로 나눠 계산
-    for (let k = 0; k < n; k++) { t += dt; step(dt, t); }
-    renderer.render(scene, camera);
-  });
-}
+  function req(){ if(!ticking){ ticking=true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll',req,{passive:true});
+  window.addEventListener('resize',layout);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(layout);
+  layout();
+})();
 </script></body></html>

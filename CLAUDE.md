@@ -26,14 +26,15 @@ UI/UX 웹디자이너 취업용 포트폴리오. GitHub Pages로 공개하고 �
 
 ## 인트로 동작
 
-- 한 화면(100svh) 인트로. 배경 #D6D6C9, 뒤에 큰 "PORTFOLIO"(#B9BAA3, `#heroName`), 앞에 검은 3D "YOUNGMIN"
-- 3D 글자는 `index.html` 맨 아래 `<script type="module">` (three.js 0.170.0, jsdelivr). Inter 900 글자를 높이 지도로 부풀려 만든다. 3D 모델 파일 없음
-- 동작: 위에서 떨어져 자리 잡음 → 커서·탭에 튕기고 서로 부딪힘 → 마우스 위치에 따라 살짝 기울어짐
-- 3D 위치는 평면 글자 `#heroWord`의 가운데를 따라간다. 3D가 안 되면(움직임 줄이기, WebGL 없음, 불러오기 실패) `#heroWord` 검은 평면 글자가 그대로 보인다
-- PC는 한 줄, 모바일(760px 미만)은 PORT / FOLIO(배경), YOUNG / MIN(3D) 두 줄
-- 실제 제목은 화면 읽기용 `h1#heroTitle`(.sr-only). 이름·3D 글자는 aria-hidden 장식
-- 인트로 위에서는 상단 메뉴 배경이 투명(`#siteHeader.on-hero`)
+- 검정(#111111) 판에 내 이름 "YOUNGMIN"이 뚫려 있고(뒤로 #D6D6C9 배경이 보임), 스크롤하면 글자 속으로 확대해 들어가 다음 화면(`#showcase`)으로 이어진다
+- `#top`은 높이 320vh, 안의 `.hero-stick`이 sticky로 화면에 붙어 있다. 글자 구멍은 SVG `<mask>`(`#logoMask`)로 만든다. 글자는 Inter 900
+- 스크립트는 `index.html` 맨 아래 인트로 `<script>`. 마지막 글자 N에서 획이 가장 두꺼운 지점을 계산해 그곳을 중심으로 확대한다. 마지막 10%에서 검정 판이 사라진다
+- PC는 한 줄 YOUNGMIN, 모바일(760px 미만)은 YOUNG / MIN 두 줄
+- 움직임 줄이기 설정이면 확대 없이 이름만 보인다
+- 실제 제목은 화면 읽기용 `h1#heroTitle`(.sr-only). SVG 글자는 aria-hidden 장식
+- 인트로 위에서는 상단 메뉴 배경이 투명(`#siteHeader.on-hero`), 검정 구간에서는 글자가 흰색(`.on-dark`)
 - 그래픽 작업 데이터는 메인 스크립트의 `G` 배열
+- 3D(three.js)는 쓰지 않는다
 
 ## 인트로 다음 화면 (기기 확대, `#showcase`)
 
